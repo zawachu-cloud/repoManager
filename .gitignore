@@ -1,0 +1,20 @@
+# 環境變數與金鑰(嚴禁提交)
+.env
+.env.*
+!.env.example
+
+# 暫存 / 草稿 / 實驗(不進版控,也不需讀入 context)
+tmp/
+archive/
+
+# 相依套件 / 建置輸出
+node_modules/
+dist/
+build/
+
+# 作業系統 / 編輯器 / 日誌
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
