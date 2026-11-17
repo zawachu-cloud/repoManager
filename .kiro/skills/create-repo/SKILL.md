@@ -66,17 +66,18 @@ touch <目錄>/.env <目錄>/tmp/.gitkeep
 ```
 > clone 來的 repo 若已有同名檔,**保留原檔**,只補缺少的。
 
-## 4b. (可選)帶入 model routing agent
+## 4b. (可選)帶入 model routing agent 與 pipeline
 
-model routing 的 `plan` / `code` / `aux` 三個角色 agent 已放**全域** `~/.kiro/agents/`,新 repo 的 session **自動可用**,通常不需額外動作。
+model routing 的 `plan` / `code` / `aux` / `orchestrator` 角色 agent,與 `pipeline` skill 已放**全域**(`~/.kiro/agents/`、`~/.kiro/skills/`),新 repo 的 session **自動可用**,通常不需額外動作。
 
-只有在這個 repo 要**本地覆蓋**(例如換某角色的 model)時,才複製範本到本地 `.kiro/agents/`:
+只有在這個 repo 要**本地覆蓋**(例如換某角色 model、或把設定隨 repo 進版控)時,才複製範本到本地:
 ```bash
-mkdir -p <目錄>/.kiro/agents
-cp "$TPL/.kiro/agents/"*.json <目錄>/.kiro/agents/
+mkdir -p <目錄>/.kiro/agents <目錄>/.kiro/skills
+cp "$TPL/.kiro/agents/"*.json              <目錄>/.kiro/agents/
+cp -r "$TPL/.kiro/skills/pipeline"         <目錄>/.kiro/skills/
 # 再依該 repo 需要改 model
 ```
-> 定義與用法見 repoManager `docs/repo-standard.md` §5。本地同名檔覆蓋全域。
+> 定義與用法見 repoManager `docs/repo-standard.md` §5 / §5a。本地同名檔覆蓋全域。
 
 ## 5. 寫入第 1 份工作
 

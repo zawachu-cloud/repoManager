@@ -73,3 +73,18 @@
 - model id 若後端不認會報 "model is not available",用 `/model` 查實際可用字串後更新本表與 agent 檔。
 - 改 model routing **只改這裡 + agent 檔**;其他文件一律指回本節,勿重複清單。
 - 內建 `/plan`(kiro_planner)不能綁 model,故自建 `plan` agent 取代之。
+
+### 5a. 自動化 pipeline(orchestrator + /pipeline)
+
+把 plan→code→test→doc 串成一條自動流程,各階段走各自 model。
+
+- **`orchestrator` agent**:協調者,`tools` 含 `subagent`,`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。放全域 `~/.kiro/agents/`,範本在 `templates/.kiro/agents/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。放全域 `~/.kiro/skills/pipeline/`,範本在 `templates/.kiro/skills/pipeline/`。
+
+**用法**:`/agent orchestrator` → `/pipeline <要做的任務>`。
+
+**注意**:
+
+- 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
+- `trustedAgents` 只免除「spawn 子 agent」的核可;子 agent 內部的 `write`/`shell` 仍可能跳核可。要全程 hands-off,發動前 `/tools trust-all`(限本 session,會被子 agent 繼承)。
+- 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。
