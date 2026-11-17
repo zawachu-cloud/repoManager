@@ -15,7 +15,7 @@
   | `/create-repo` | 建立一個新 repo(local 新建或從 git ssh url clone),並補齊必備結構、寫入第 1 份工作。 |
   | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
-  | `/pipeline` | 跑 plan→code→test→doc 四階段 subagent pipeline,各階段走各自 model。先 `/agent orchestrator` 再用。 |
+  | `/pipeline` | 跑 plan→code→test→doc 四階段 subagent pipeline,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/pipeline/`)。
 
 ## 目錄結構
@@ -32,16 +32,14 @@ repoManager/
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
 │   ├── docs/README.md
-│   ├── .kiro/agents/              # 角色 agent 範本(plan/code/aux/orchestrator)
-│   └── .kiro/skills/pipeline/     # pipeline skill 範本
-├── .kiro/
-│   ├── agents/
-│   │   └── orchestrator.json      # pipeline 協調者(本地覆蓋全域)
-│   └── skills/
-│       ├── create-repo/SKILL.md
-│       ├── close-session/SKILL.md
-│       ├── check-repo/SKILL.md
-│       └── pipeline/SKILL.md      # plan→code→test→doc pipeline
+│   ├── .kiro/agents/              # 角色 agent 備份(plan/code/aux/orchestrator),來源是 ~/.kiro/
+│   └── .kiro/skills/pipeline/     # pipeline skill 備份,來源是 ~/.kiro/
+├── scripts/
+│   └── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
+├── .kiro/skills/
+│   ├── create-repo/SKILL.md
+│   ├── close-session/SKILL.md
+│   └── check-repo/SKILL.md
 ├── .gitignore
 ├── .env.example
 └── tmp/                           # 暫存(不進版控)
@@ -63,7 +61,7 @@ repoManager/
 - **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問老闆(老闆已授權)。
 - **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向老闆確認。
 - **不擅自大重構**:規範只在 `docs/repo-standard.md` 改一處。
-- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` skill 放全域 `~/.kiro/`,範本在 `templates/.kiro/`。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
+- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
 
 ## 給 AI 代理的工作準則
 

@@ -64,8 +64,9 @@
 
 **存放與同步**:
 
-- **全域** `~/.kiro/agents/{plan,code,aux}.json` → 一處定義,所有 repo 的 session 自動可用(「同步給所有 repo」最省事;改一次全部生效)。
-- **範本** `templates/.kiro/agents/{plan,code,aux}.json` → 給需要**本地覆蓋**的 repo;由 `create-repo` 可選複製進新 repo 的 `.kiro/agents/`。**本地同名檔覆蓋全域**。
+- **全域** `~/.kiro/agents/{plan,code,aux,orchestrator}.json`、`~/.kiro/skills/pipeline/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
+- **備份** `templates/.kiro/` → `~/.kiro/` 不在版控,改完執行 `scripts/sync-kiro.sh` 複製回來並 commit。換機器時反向複製到 `~/.kiro/` 即可還原。
+- **本地覆蓋** → 只有某 repo 需要跟全域不同(例如換 model)時,才在該 repo 放同名 `.kiro/agents/<name>.json`。本地同名檔會覆蓋全域,之後改全域不會影響它,沒必要就不要放。
 
 **慣例**:
 
@@ -78,8 +79,8 @@
 
 把 plan→code→test→doc 串成一條自動流程,各階段走各自 model。
 
-- **`orchestrator` agent**:協調者,`tools` 含 `subagent`,`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。放全域 `~/.kiro/agents/`,範本在 `templates/.kiro/agents/`。
-- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。放全域 `~/.kiro/skills/pipeline/`,範本在 `templates/.kiro/skills/pipeline/`。
+- **`orchestrator` agent**:協調者,`tools` 含 `subagent`,`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。在 `~/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → `/pipeline <要做的任務>`。
 
