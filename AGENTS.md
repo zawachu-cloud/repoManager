@@ -30,7 +30,8 @@ repoManager/
 │   ├── firstTask.md
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
-│   └── docs/README.md
+│   ├── docs/README.md
+│   └── .kiro/agents/              # model routing 角色 agent 範本(plan/code/aux)
 ├── .kiro/skills/
 │   ├── create-repo/SKILL.md
 │   ├── close-session/SKILL.md
@@ -56,6 +57,7 @@ repoManager/
 - **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問老闆(老闆已授權)。
 - **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向老闆確認。
 - **不擅自大重構**:規範只在 `docs/repo-standard.md` 改一處。
+- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 放全域 `~/.kiro/agents/`,範本在 `templates/.kiro/agents/`。定義與用法是 `docs/repo-standard.md` §5(單一真實來源),勿在他處重複清單。
 
 ## 給 AI 代理的工作準則
 

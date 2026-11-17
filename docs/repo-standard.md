@@ -51,3 +51,25 @@
 - **收尾狀態**:套用 §3 的三項檢查,回報是否可安全收尾。
 
 輸出一份清單:每項標 ✅ 合規 / ⚠️ 建議 / ❌ 缺失,並給修正動作。
+
+## 5. Model routing(角色 agent)
+
+依任務類型用不同 model,各角色一個 agent。Kiro CLI **沒有自動依任務切 model 的功能**;routing = 手動 `/agent <名稱>` 切換(或設 `keyboardShortcut` 一鍵切),也可用 subagent pipeline 讓各 stage 指定不同 `role`。
+
+| agent | model | 負責 | 快捷鍵 |
+|-------|-------|------|--------|
+| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
+| `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
+| `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作 | `ctrl+shift+u` |
+
+**存放與同步**:
+
+- **全域** `~/.kiro/agents/{plan,code,aux}.json` → 一處定義,所有 repo 的 session 自動可用(「同步給所有 repo」最省事;改一次全部生效)。
+- **範本** `templates/.kiro/agents/{plan,code,aux}.json` → 給需要**本地覆蓋**的 repo;由 `create-repo` 可選複製進新 repo 的 `.kiro/agents/`。**本地同名檔覆蓋全域**。
+
+**慣例**:
+
+- 每個角色 agent 都**明確寫 `model`**。切 agent 時若新 agent 沒設 model 會沿用當下 model,寫死才可靠。
+- model id 若後端不認會報 "model is not available",用 `/model` 查實際可用字串後更新本表與 agent 檔。
+- 改 model routing **只改這裡 + agent 檔**;其他文件一律指回本節,勿重複清單。
+- 內建 `/plan`(kiro_planner)不能綁 model,故自建 `plan` agent 取代之。
