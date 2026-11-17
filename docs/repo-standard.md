@@ -84,6 +84,10 @@
 
 **用法**:`/agent orchestrator` → `/pipeline <要做的任務>`。
 
+- plan 有需要老闆決定的選項時,pipeline 會先停下來問;老闆**直接回覆**即可接續,不用再打 `/pipeline`。
+- 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的階段。
+- plan 的計畫寫在 `tmp/pipeline-plan.md`(不進版控),供後續階段讀取。
+
 **注意**:
 
 - 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
