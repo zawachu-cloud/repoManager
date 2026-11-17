@@ -21,4 +21,4 @@ description: 跑 plan→code→test→doc 四階段 subagent pipeline,各階段�
 - 跑完彙整各階段結果回報老闆;任一階段失敗即 fail-fast,立刻回報錯誤。
 
 > 需站在**有 subagent 工具**的 agent 執行,建議先 `/agent orchestrator`(已設 availableAgents / trustedAgents,spawn 不跳核可)。
-> 子 agent 內部的 write/shell 若仍跳核可,想全程 hands-off 可先 `/tools trust-all`(限本 session,會被子 agent 繼承)。
+> 子 agent 的 `write`/`shell` 已在 `code`/`aux` 的 `allowedTools` 放行(破壞性指令由 `deniedCommands` 擋下),pipeline **全程不跳核可,無需 `/tools trust-all`**。

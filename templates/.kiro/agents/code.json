@@ -4,7 +4,25 @@
   "model": "claude-sonnet-5.5",
   "prompt": "你是資深工程師,負責實作與修改程式碼。遵循既有慣例與專案風格,小步前進,改完自我驗證(建置 / 測試)。不做未要求的大重構。以繁體中文回覆老闆;程式碼識別符用英文。",
   "tools": ["read", "write", "shell", "grep", "glob", "code"],
-  "allowedTools": ["read", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code", "write", "shell"],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true,
+      "deniedCommands": [
+        ".*\\brm\\s+-[a-zA-Z]*[rf].*",
+        ".*\\bgit\\s+reset\\s+--hard.*",
+        ".*\\bgit\\s+push\\b.*(--force|--force-with-lease|-f\\b).*",
+        ".*\\bgit\\s+clean\\s+-[a-zA-Z]*f.*",
+        ".*\\bsudo\\b.*",
+        ".*\\bmkfs.*",
+        ".*\\bdd\\s+if=.*",
+        ".*\\b(shutdown|reboot|halt|poweroff)\\b.*",
+        ".*\\bchmod\\s+-R\\s+0?777.*",
+        ".*>\\s*/dev/sd.*",
+        ".*\\b(DROP|TRUNCATE)\\s+(TABLE|DATABASE)\\b.*"
+      ]
+    }
+  },
   "keyboardShortcut": "ctrl+shift+c",
   "welcomeMessage": "寫程式模式 (sonnet-5.5):要實作 / 修改什麼?"
 }

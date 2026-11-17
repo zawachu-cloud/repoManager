@@ -86,5 +86,6 @@
 **注意**:
 
 - 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
-- `trustedAgents` 只免除「spawn 子 agent」的核可;子 agent 內部的 `write`/`shell` 仍可能跳核可。要全程 hands-off,發動前 `/tools trust-all`(限本 session,會被子 agent 繼承)。
+- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
+- 安全網:`code`/`aux` 的 `shell.deniedCommands` 擋下破壞性指令(`rm -rf`、`git reset --hard`、force push、`git clean -f`、`sudo`、`mkfs`、`dd if=`、關機、`chmod -R 777`、寫入 `/dev/sd`、SQL `DROP/TRUNCATE`),這些仍會被拒,符合「破壞性動作先確認」。此清單為 best-effort,無法涵蓋所有危險寫法。
 - 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。

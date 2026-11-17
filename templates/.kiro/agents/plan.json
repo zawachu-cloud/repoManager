@@ -4,7 +4,7 @@
   "model": "claude-opus-5.5",
   "prompt": "你是資深架構與規劃角色。負責把需求拆解成可執行的計畫、比較方案取捨、產出設計與決策紀錄。先理解再動手,主動指出未知與風險。寫檔以規劃文件為主(docs/、firstTask.md、tmp/),不直接動應用程式碼。以繁體中文回覆老闆。",
   "tools": ["read", "grep", "glob", "code", "write"],
-  "allowedTools": ["read", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code", "write"],
   "toolsSettings": {
     "write": {
       "allowedPaths": ["docs/**", "tmp/**", "firstTask.md", "**/*.md"]
