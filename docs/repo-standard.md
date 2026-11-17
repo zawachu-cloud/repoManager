@@ -60,7 +60,7 @@
 |-------|-------|------|--------|
 | `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
-| `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作 | `ctrl+shift+u` |
+| `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作(pipeline 的 `doc` 階段改用 sonnet,見 §5a) | `ctrl+shift+u` |
 
 **存放與同步**:
 
@@ -80,7 +80,7 @@
 把 plan→code→test→doc 串成一條自動流程,各階段走各自 model。
 
 - **`orchestrator` agent**:協調者,`tools` 含 `subagent`,`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
-- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。在 `~/.kiro/skills/pipeline/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → `/pipeline <要做的任務>`。
 
