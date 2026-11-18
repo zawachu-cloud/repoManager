@@ -58,7 +58,7 @@
 
 | agent | model | 負責 | 快捷鍵 |
 |-------|-------|------|--------|
-| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
+| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;pipeline 中當子項目架構師(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
 | `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作(pipeline 的 `doc` 階段改用 sonnet,見 §5a) | `ctrl+shift+u` |
 
@@ -77,20 +77,21 @@
 
 ### 5a. 自動化 pipeline(orchestrator + /pipeline)
 
-把 plan→code→test→doc 串成一條自動流程,各階段走各自 model。
+orchestrator 當總架構師(opus),直接跟老闆討論與規劃;子項目細部規劃視情況派 `plan`(子項目架構師),實作與收尾派 `code` / `aux`。目的是讓老闆能直接跟 orchestrator 對話,同時把吃 token 的細部規劃隔離在 subagent,控制 orchestrator 的 context。
 
-- **`orchestrator` agent**:協調者,`tools` 含 `subagent`,`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
-- **`pipeline` skill**:`/pipeline <任務>` → 用 subagent 跑四階段(`test`、`doc` 並行於 `code` 之後)。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
+- **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
+- **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟老闆確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
+- **`pipeline` skill**:`/pipeline <任務>` → 拆解並確認 → 規劃子項目(自己或派 plan,可並行)→ 每個子項目跑 `code`,之後 `test`、`doc` 並行。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
 
-**用法**:`/agent orchestrator` → `/pipeline <要做的任務>`。
+**用法**:`/agent orchestrator` → 直接討論,或 `/pipeline <要做的任務>`。
 
-- plan 有需要老闆決定的選項時,pipeline 會先停下來問;老闆**直接回覆**即可接續,不用再打 `/pipeline`。
-- 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的階段。
-- plan 的計畫寫在 `tmp/pipeline-plan.md`(不進版控),供後續階段讀取。
+- 有需要老闆決定的選項時(orchestrator 拆解時,或 plan 回報時),會先停下來問;老闆**直接回覆**即可接續,不用再打 `/pipeline`。
+- 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的部分,子項目計畫小改自己改,大改重派 plan。
+- 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。plan 回報只給「摘要」與「需要老闆決定」兩段,完整計畫留在檔案裡。
 
 **注意**:
 
 - 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
-- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
+- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
 - 安全網:`code`/`aux` 的 `shell.deniedCommands` 擋下破壞性指令(`rm -rf`、`git reset --hard`、force push、`git clean -f`、`sudo`、`mkfs`、`dd if=`、關機、`chmod -R 777`、寫入 `/dev/sd`、SQL `DROP/TRUNCATE`),這些仍會被拒,符合「破壞性動作先確認」。此清單為 best-effort,無法涵蓋所有危險寫法。
 - 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。

@@ -18,7 +18,7 @@
 
 ```
 /agent plan | code | aux                    # 手動切換角色
-/agent orchestrator                         # 再用 /pipeline 自動跑 plan→code→test→doc
+/agent orchestrator                         # 總架構師:直接討論,或 /pipeline 拆解並分派
 /pipeline 為報表頁加 CSV 匯出功能
 ```
 
