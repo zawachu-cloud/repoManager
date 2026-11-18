@@ -17,6 +17,7 @@
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
   | `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/pipeline/`)。
+- **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道老闆是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
 ## 目錄結構
 
@@ -25,7 +26,14 @@ repoManager/
 ├── AGENTS.md                      # 本檔:精簡規範,指向 docs/
 ├── README.md                      # 入口說明
 ├── docs/
-│   └── repo-standard.md           # repo 必備結構 + close session 規範(單一真實來源)
+│   ├── repo-standard.md           # repo 必備結構 + close session 規範(單一真實來源)
+│   └── context-system.md          # context 系統:三層記憶、資料流、機密處理、分階段計畫
+├── rules/                         # L3 全域規則(symlink 到 ~/.kiro/steering/,每個 session 自動載入)
+│   ├── SOUL.md                    # AI 行為基調
+│   ├── USER.md                    # 老闆背景與偏好
+│   └── COMMUNICATION.md           # 溝通風格
+├── contexts/memory/
+│   └── OBSERVATIONS.md            # L1/L2 觀察紀錄(按需 grep,不整份讀)
 ├── templates/                     # 新 repo 範本(由 create-repo 複製 / 參考)
 │   ├── AGENTS.md
 │   ├── firstTask.md
@@ -35,7 +43,8 @@ repoManager/
 │   ├── .kiro/agents/              # 角色 agent 備份(plan/code/aux/orchestrator),來源是 ~/.kiro/
 │   └── .kiro/skills/pipeline/     # pipeline skill 備份,來源是 ~/.kiro/
 ├── scripts/
-│   └── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
+│   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
+│   └── link-rules.sh              # 把 rules/*.md symlink 到 ~/.kiro/steering/(換機器跑一次)
 ├── .kiro/skills/
 │   ├── create-repo/SKILL.md
 │   ├── close-session/SKILL.md
@@ -69,3 +78,4 @@ repoManager/
 - 三個 skill 的判斷基準一律回到 `docs/repo-standard.md`,不要各自硬編規則。
 - 建立新 repo 時以 `templates/` 為範本;新 repo 已存在的檔**不覆蓋**,缺的才補。
 - 收尾(close session)依 `docs/repo-standard.md` §3 三步驟進行。
+- **context 系統**:改全域規則就改 `rules/*.md`(symlink 立即生效,不用 sync);值得跨 session 記住的經驗或決策,追加到 `contexts/memory/OBSERVATIONS.md`(格式見該檔,**不寫機密**)。repoManager 因此含個人記憶,**不可轉 public**。

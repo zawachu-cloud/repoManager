@@ -11,6 +11,15 @@
   - `/check-repo <目錄>` — 檢查指定目錄是否符合 repo 標準。
 - **`templates/`** — 新 repo 範本(AGENTS.md、firstTask.md、gitignore、env.example、docs/README),以及 `templates/.kiro/`:全域 `~/.kiro/` 角色 agent 與 pipeline skill 的版控備份。
 - **`scripts/sync-kiro.sh`** — 把 `~/.kiro/` 的 agent 與 pipeline skill 同步回 `templates/.kiro/`。
+- **`rules/`、`contexts/memory/`** — context 系統(參考 grapeot/context-infrastructure):全域規則與觀察紀錄。`scripts/link-rules.sh` 把 `rules/*.md` 掛到 `~/.kiro/steering/`,所有 repo 自動載入。見 `docs/context-system.md`。
+
+## 換機器
+
+```
+git clone git@github.com:zawachu-cloud/repoManager.git ~/proj/my/repoManager
+cp -r templates/.kiro/agents templates/.kiro/skills ~/.kiro/   # 還原角色 agent 與 pipeline
+scripts/link-rules.sh                                          # 掛上全域規則
+```
 
 ## Model routing 與 pipeline
 
