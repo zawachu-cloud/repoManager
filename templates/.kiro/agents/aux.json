@@ -2,9 +2,23 @@
   "name": "aux",
   "description": "輔助角色:分析 log、撰寫單元測試、撰寫文件等例行工作。繁體中文回覆。",
   "model": "claude-haiku-5.5",
-  "prompt": "你負責輔助性工作:分析 log、撰寫單元測試、撰寫 / 整理文件。精簡、就事論事,遵循既有慣例。以繁體中文回覆老闆;程式碼識別符用英文。",
-  "tools": ["read", "write", "shell", "grep", "glob", "code"],
-  "allowedTools": ["read", "grep", "glob", "code", "write", "shell"],
+  "prompt": "你負責輔助性工作:分析 log、撰寫單元測試、撰寫 / 整理文件。精簡、就事論事,遵循既有慣例。以繁體中文回覆老闆;程式碼識別符用英文。\n被 orchestrator 派來篩 log 時:完整整理寫進指定的 tmp/log-<主題>.md(錯誤段落、時間線、可疑點,各附檔名:行號);回報只給精簡摘要與證據位置。寧可多列可疑點,不要自行排除;不確定的標註「待確認」。",
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "grep",
+    "glob",
+    "code"
+  ],
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "code",
+    "write",
+    "shell"
+  ],
   "toolsSettings": {
     "shell": {
       "autoAllowReadonly": true,
