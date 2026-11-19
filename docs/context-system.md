@@ -166,6 +166,6 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 
 ## 6. 未決事項
 
-- `USER.md` 的 `<待補>` 欄位(背景、討厭什麼);「目前的專案」依 §2b 由 AI 逐步補。
+- `USER.md`「目前的專案」的 `line`、`modelRouting` 依 §2b 由 AI 逐步補(老闆決定不填背景等其他欄位)。
 - `age.txt` 的異地保存方式(老闆決定)。
 - 換電腦前要先跑一次匯出,確認最後幾天的對話進了存檔(`~/.kiro/sessions/` 不會跟著走)。
