@@ -2,7 +2,7 @@
 # 匯出 AI 對話存檔(ai_session_export),通過 gitleaks 後加密備份到 private_session_data。
 #
 # 用法:
-#   scripts/session-export.sh            # cron 用:kiro + claude-code 全部增量 → gitleaks → 加密備份並 push → 語意索引增量
+#   scripts/session-export.sh            # cron 用:kiro + claude-code 全部增量 → gitleaks → 加密備份並 push → 語意索引增量 → observer
 #   scripts/session-export.sh --current  # /close-session 用:只匯出 $KIRO_SESSION_ID 這一個 session,不備份
 #
 # 設計見 docs/context-system.md §2a、§4a。log 在 ~/.local/share/ai-session-export/logs/。
@@ -15,6 +15,7 @@ EXPORTER="${AI_SESSION_EXPORT_DIR:-${HOME}/proj/my/ai_session_export}"
 PY="${EXPORTER}/.venv/bin/python"
 ARCHIVE="${HOME}/.local/share/ai-session-export"
 LOG_DIR="${ARCHIVE}/logs"
+HEARTBEAT_DIR="${HOME}/.local/share/ai-heartbeat"   # observer/reflector 的 Kiro session,不匯出
 mkdir -p "${LOG_DIR}"
 
 if [[ ! -x "${PY}" ]]; then
@@ -36,7 +37,7 @@ exec 9>"${LOG_DIR}/.lock"
 flock -n 9 || { echo "另一個匯出正在執行,略過"; exit 0; }
 
 echo "=== $(date '+%F %T') session-export"
-"${PY}" "${EXPORTER}/export_sessions.py" --source kiro
+"${PY}" "${EXPORTER}/export_sessions.py" --source kiro --kiro-exclude-cwd "${HEARTBEAT_DIR}"
 if [[ -d "${HOME}/.claude/projects" ]]; then
   "${PY}" "${EXPORTER}/export_sessions.py" --source claude-code
 fi
@@ -56,3 +57,6 @@ if systemctl --user is-active --quiet ollama 2>/dev/null || curl -sf http://127.
 else
   echo "Ollama 沒在跑,略過語意索引" >&2
 fi
+
+# L1 每日觀察:新對話 → OBSERVATIONS.md(見 docs/context-system.md §4c)。失敗不影響備份,下次會重試同一段。
+python3 "${REPO_ROOT}/scripts/heartbeat.py" observe || echo "observer 失敗,見 ${HEARTBEAT_DIR}/last-obs.log" >&2

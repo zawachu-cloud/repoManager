@@ -43,6 +43,10 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 - 只寫用途與方向,不寫憑證與資料內容(姓名、身分證、薪資數字、帳號)。
 - 有改就在 repoManager 另外 commit / push(訊息如 `USER.md: update <repo> project line`)。當下 repo 就是 repoManager 時,併入步驟 4 一起提交。
 
+## 步驟 3c:提醒待確認的記憶變更
+
+`~/proj/my/repoManager/contexts/memory/pending-review.md` 有未打勾(`- [ ]`)的項目時,在收尾報告最後列出數量並提醒老闆。老闆說要套用哪幾項才改 `rules/`,AI 不自己套用。
+
 ## 步驟 4:直接 commit / push(AI 決定,不用問)
 
 確認機密未外洩後,**直接** `git add -A && git commit && git push`(老闆已授權,不用再問);commit 訊息用祈使句描述本次變更。

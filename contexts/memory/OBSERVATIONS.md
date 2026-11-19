@@ -2,8 +2,8 @@
 
 三層記憶的 L1/L2 層(L3 是 `rules/`)。設計見 `docs/context-system.md`。
 
-- 目前:**手動**記錄(收工時或發現值得記的經驗時)。
-- 第 4 階段後:每日 observer 自動追加,每週 reflector 整理,提出的規則候選要老闆核准才合入 `rules/`。
+- 每天 12:30 observer 自動追加;每週三 reflector 清掉 30 天以上的 🟢,規則候選寫到 `pending-review.md`,老闆核准才合入 `rules/`。
+- 手動追加也可以(收工時或發現值得記的經驗時)。
 
 ## 格式
 

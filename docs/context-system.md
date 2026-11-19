@@ -43,7 +43,7 @@ reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → 老闆核准才合入
 | 時機 | 範圍 | 依據 | 要不要問老闆 |
 |------|------|------|------|
 | `/close-session` | 只動當下 repo 那一行 | 本 session 做的事 + 該 repo 的 AGENTS.md | 不用,直接改並 commit |
-| 每週三回顧(reflector,第 4 階段) | 所有專案行 | 本週匯出的對話 Markdown | 專案行直接改;其他段落(偏好、溝通方式)只提候選,老闆核准才改 |
+| 每週三 13:00 回顧(reflector) | 所有專案行 | 本週匯出的對話 Markdown | 專案行直接改;其他段落(偏好、溝通方式)只提候選,老闆核准才改 |
 
 平時 session 不動這段,避免根據片段對話寫錯。
 
@@ -141,6 +141,20 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 
 **換電腦**:裝 Ollama(下載官方 `ollama-linux-amd64.tar.zst` 解壓到 `~/.local/opt/ollama`,複製 `~/.config/systemd/user/ollama.service`,`loginctl enable-linger`)→ `ollama pull qwen3-embedding:4b` → clone semantic-search-skill 並建 venv → `scripts/semantic_search.py index`(約 25 分鐘)。
 
+### 4c. 自動記憶(第 4 階段實作)
+
+| 元件 | 內容 |
+|------|------|
+| `scripts/heartbeat.py observe` | 每天 12:30(接在 `session-export.sh` 最後)。挑出大小有變的存檔(新 session 或續聊),一次最多 40 個,交給 Kiro 寫 🔴🟡🟢,追加到 `OBSERVATIONS.md` 並 commit。失敗不推進狀態,下次重試同一批。 |
+| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md **直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 規則候選與記憶合併建議寫進 `contexts/memory/pending-review.md`,**老闆核准才套用**。 |
+| Kiro agent `heartbeat` | `~/.kiro/agents/heartbeat.json`(sonnet-5.5),只有 read/grep/glob,**不能寫檔或執行指令**(已實測)。結果印在標記之間,由腳本驗證格式 → 遮罩 → gitleaks → 寫檔 → 只 commit 碰到的檔。 |
+| 不回灌 | heartbeat 的 Kiro session 在 `~/.local/share/ai-heartbeat/` 執行,匯出時用 `--kiro-exclude-cwd` 排除,不會變成下一輪的觀察來源。 |
+| 狀態 / log | `~/.local/share/ai-heartbeat/state.json`(各存檔上次觀察時的大小)、`last-obs.log`、`last-reflect.log`、`cron.log`。 |
+
+- 判斷變動用檔案大小,不用 mtime:`--full` 重匯會讓所有檔 mtime 變新,但內容一樣。第一次執行時,昨天以前的存檔一律當作已看過(歷史用 `/recall` 查)。
+- Kiro 服務偶爾在回應中途失敗(`dispatch failure`),`run_kiro` 會等 60 秒重試一次。
+- 首次執行(2026-11-19):observer 寫入 15 則;reflector 補了 9 個專案行,提出 4 則規則候選、5 則記憶整理。
+
 ## 5. 分階段計畫
 
 | 階段 | 內容 | 狀態 |
@@ -148,7 +162,7 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 | 1 | `rules/` 三份檔、`OBSERVATIONS.md`、steering symlink、本文件 | ✅ 2026-11-18(`USER.md` 仍有 `<待補>`) |
 | 2 | fork ai_session_export,寫 Kiro adapter + 遮罩;匯出 Kiro 與 Claude Code;age 加密備份;cron 與 `/close-session` 串接 | ✅ 2026-11-19(見 §4a) |
 | 3 | 安裝 Ollama + 本地 embedding 模型,semantic-search-skill 指向本地端點,建索引;寫查詢 skill | ✅ 2026-11-19(見 §4b) |
-| 4 | observer(每日)/ reflector(**每週三**,含 §2b 的 USER.md 回顧)改用 `kiro-cli chat --no-interactive`(已確認此參數存在)取代 upstream 的 OpenCode;接 cron 與 `/close-session` | 待做 |
+| 4 | observer(每日)/ reflector(**每週三**,含 §2b 的 USER.md 回顧)改用 `kiro-cli chat --no-interactive` 取代 upstream 的 OpenCode;接 cron 與 `/close-session` | ✅ 2026-11-19(見 §4c) |
 
 ## 6. 未決事項
 
