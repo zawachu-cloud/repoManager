@@ -49,8 +49,12 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 | 在狀態檔,`updated_at` 沒變 | 已是最新 | 略過 |
 
 - 每份 Markdown 的 frontmatter 有 `session_id`,可反查。
-- `/close-session` 跑的是「全部增量」,不是只匯出當下這個 session,所以漏跑不會掉資料。
-- 對帳:`~/.kiro/sessions/cli/*.json` 的數量(扣掉 subagent 與空 session)應等於狀態檔筆數。
+- **兩個觸發點,分工不同**:
+  - `/close-session`:**只匯出當下這個 session**。Kiro 會把目前 session id 放在環境變數 `KIRO_SESSION_ID`,對應 `~/.kiro/sessions/cli/$KIRO_SESSION_ID.json`(2026-11-19 已驗證)。
+  - cron **每天 12:30**(系統時區 Asia/Taipei):跑全部增量,補上沒下 `/close-session` 的 session,以及收工後又繼續聊的 session。crontab:`30 12 * * *`。
+- WSL 注意:cron 只在 WSL 開著時才跑(目前 cron 有在跑,開機自動啟用)。12:30 電腦沒開就略過那天,下次執行會補上,不會掉資料。
+- **`session_created_reason` 不能用來判斷子 session**:本 session 是老闆直接開的主對話,欄位卻是 `subagent`。adapter 要改用其他欄位(例如 parent id)區分,第 2 階段實作時確認。
+- 對帳:`~/.kiro/sessions/cli/*.json` 的數量(扣掉子 session 與空 session)應等於狀態檔筆數。
 - 要全部重來用 `--full`。
 
 ## 3. 決策紀錄
@@ -63,7 +67,7 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 | 2026-11-18 | L3 用 `~/.kiro/steering/` symlink 載入 | default 與自建 agent 都吃得到,不必改每個 agent 的 `resources`。 |
 | 2026-11-18 | ~~embedding 可用雲端,但送出前不得含機密~~ | 已由 2026-11-19 決策取代。 |
 | 2026-11-19 | **embedding 全部在本地,不送雲端**;所有 repo 的對話都收(含 hr 類),只是不記憑證與資料內容 | 遮罩抓不準人名、薪資數字,全本地就不必賭遮罩。機器有 RTX 3050 8GB、16 核、15GB RAM,跑小型 embedding 模型(如 Qwen3-Embedding-0.6B、bge-m3)夠用。代價:要裝 Ollama 等本地服務,建索引花運算時間但不花錢。 |
-| 2026-11-19 | 匯出是**增量**的,`/close-session` 與 cron 都跑同一支 | 狀態檔記每個 session 的 id 與 `updated_at`;漏跑一次,下次會補上。見 §2a。 |
+| 2026-11-19 | 匯出是**增量**的;`/close-session` 只匯出當下 session,cron 每天 12:30 跑全部增量補漏 | 收工要快,不必每次掃 700 多個 session;cron 負責補漏。見 §2a。 |
 
 ## 4. 機密處理(第 2、3 階段的硬性要求)
 
