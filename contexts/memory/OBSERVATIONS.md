@@ -51,3 +51,21 @@ Date: 2026-11-19
 🟡 Medium: [完成] 第 3 階段:Ollama(user-level,127.0.0.1)+ qwen3-embedding:4b,`/recall` skill 查對話存檔與本檔。評測與換電腦步驟見 repoManager `docs/context-system.md` §4b。
 🟡 Medium: [決策] embedding 模型選 qwen3-embedding:4b(14 題中文查詢 MRR 0.77,bge-m3 0.73,0.6b 0.67);0.6b 是備案。
 🟢 Low: [發現] cron 環境沒有 systemd user bus,`systemctl --user` 會失敗;檢查 Ollama 改用 `curl 127.0.0.1:11434/api/version`。
+
+Date: 2026-11-19
+
+🔴 High: [約束] 備份加密金鑰(age)只存在這台電腦,電腦壞了備份就打不開。老闆要自己另存一份到密碼管理器等安全處,AI 不會搬動金鑰。換電腦前必須先確認這件事。
+🔴 High: [決策] orchestrator 改成 opus,兼任規劃,直接跟老闆討論。plan 保留,當子項目架構師,由 orchestrator 派出去,讓大量讀碼的工作留在 subagent 的 context。plan 只回「摘要」與「需要老闆決定」,完整計畫寫進 tmp/plan-<子項目>.md。
+🟡 Medium: [偏好] 老闆希望直接跟 orchestrator 討論,不想每輪都轉給 plan 再轉回來,能接受 context 變長。成本與 context 取捨由老闆自己判斷,這次他用「cowork」的角度做決定。
+🟡 Medium: [決策] 老闆常需要讀大量 log。單檔約 2000 行以上或多份 log 時,orchestrator 先派 aux 篩出錯誤段落、時間線與可疑點,寫進 tmp/log-<主題>.md,只回摘要與檔名:行號。門檻是估的,待實際使用後調整。
+🟡 Medium: [發現] 看 log、討論、寫 md 回覆這類工作,orchestrator 不派 subagent 是合理的。subagent 沒辦法問老闆,每輪都要重新交代脈絡。沒派 subagent 不代表設計有問題。
+🟡 Medium: [決策] 子 session 改用 parent_session_id 判斷(727 個 Kiro session 中有 30 個)。session_created_reason 會把老闆的主對話也標成 subagent,照它過濾會丟掉約 92%。對帳:727 = 470 匯出 + 30 子 session + 227 空 session。
+🟡 Medium: [決策] ai_session_export 在 GitHub 上 fork 無法設成 private。做法是本地 clone,upstream 指原作者,origin 指自己的 private repo。PR 回原作者屬於公開動作,要老闆另外授權。
+🟢 Low: [發現] Ollama 的官方安裝腳本需要 sudo,所以改用 user-level 壓縮包,以 systemd user service 常駐並只綁 127.0.0.1。索引 rebuild 只重算 mtime 或大小有變的檔案,增量更新約 13 秒,所以 cron 每天跑成本低。
+🟢 Low: [發現] semantic-search 同一個檔案會佔掉太多結果名額,查詢時候選數要放大。4B 模型有一題排第 9,屬於已知限制,已寫進文件。
+🟡 Medium: [專案狀態] psapi-dotnet 發了 v1.4.22:GameHistoryInner、GameListInner、GetHostInfoInner 三支內部 endpoint 不驗 JWT,只靠 Inner IP 白名單。OfflineMiddleware 用完整路徑比對,不用 Contains。QA 和 prod 部署前,維運要先確認後台 server IP 在 Inner 白名單。
+🟡 Medium: [發現] psapi-dotnet 的 GameHistoryInner 原本沒掛 Inner 白名單,只靠 JWT 擋人。拿掉 JWT 之前必須同版掛上白名單,否則會出現 IDOR。AI 動工前先查現況,才發現「規劃中」的白名單其實沒做。
+🟡 Medium: [待決] psapi-dotnet 在 dev 發現:同機程式直連 container 時,docker 閘道位址是可信代理,可偽造 X-Forwarded-For 繞過 Inner 白名單。這是既有漏洞,不是 v1.4.22 造成的。AI 建議先記進文件並請維運查 stage/prod,不改程式。另外 GameHistory、V2、All、Diff 尚無白名單,要不要另開一案待老闆決定。
+🟡 Medium: [偏好] 老闆在 AI 動手前,會再確認一次它對需求的理解(例如「Inner 是不是不套 JWT」)。AI 交付前先用一句話複述範圍與效果,老闆能用這句話快速確認。
+🟢 Low: [驗證] 驗證 steering 規則是否生效,用「不要用任何工具,只回答 USER.md 的稱呼」這類短問題,在 /tmp 和 stocktake 各測一次即可。
+🟢 Low: [專案狀態] 老闆在 WSL 設定 openssh-server,讓 Windows 端能免密碼 ssh 進來。sshd 仍允許密碼登入,AI 建議改成只允許金鑰,老闆還沒回覆。
