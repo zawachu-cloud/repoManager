@@ -22,14 +22,17 @@
 
 位於 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
 
-- `hr`:<待補>
-- `hr_db`:<待補>
-- `income_ana`:<待補>
+- `hr`:小型公司人事薪資、排班打卡、每日帳目系統(Supabase + Cloudflare)。近期調整工時更正偵測,每日帳目改唯讀並由 AI 寫入 DB。
+- `hr_db`:hr 的資料庫實驗場。連 Supabase 查詢、驗證計薪假設、起草 migration 草案。select 預設 prod,其餘寫入預設 dev。
+- `income_ana`:火鍋店營收與人力成本分析,並把店面內帳匯入 hr 記帳。方向:重算 10 月損益、補齊完整 11 月營業額。
 - `line`:<待補>
-- `stocktake`:<待補>
-- `innerDoc`:<待補>
+- `stocktake`:店員用手機盤點庫存,並預估用量與可用天數。獨立 Supabase,盤點資料保留 3 年(pg_cron 清理)。
+- `innerDoc`:公司人事表單(試用期、離職、資遣、招募)的 Markdown 原始檔與 PDF 轉出,改 md 再轉檔。
 - `modelRouting`:<待補>
-- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)。
+- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶),以及 plan/code/aux 的 model routing。
+- `ai_session_export`:對話存檔匯出工具(fork 自 upstream),含 Kiro adapter 與遮罩,cron 每天增量匯出。
+- `semantic-search-skill`:本機 Ollama 語意搜尋,查對話存檔與 OBSERVATIONS,供 /recall skill 使用。
+- `private_session_data`:對話存檔的 age 加密備份 private repo。
 
 ## 工作偏好(已確認)
 
