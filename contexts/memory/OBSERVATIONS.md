@@ -48,3 +48,6 @@ Date: 2026-11-19
 🟡 Medium: [完成] 第 2 階段:Kiro adapter + 遮罩(fork `zawachu-cloud/ai_session_export`)、加密備份(`zawachu-cloud/private_session_data`)、cron 12:30、`/close-session` 匯出步驟。工具位置與換電腦步驟見 repoManager `docs/context-system.md` §4a。
 🔴 High: [約束] 遮罩規則要拿真實存檔跑 gitleaks 調校,再回頭查誤判。第一次全量 gitleaks 抓到 12 筆漏網(GitLab runner token、Supabase key),調完再清掉誤判(「密碼是 Supabase 那組」這類中文句子、sudoers NOPASSWD)。
 🟢 Low: [發現] upstream ai_session_export 的 `--source all` 遇到沒裝的工具(OpenCode)會直接報錯,所以入口腳本逐一跑 kiro、claude-code。
+🟡 Medium: [完成] 第 3 階段:Ollama(user-level,127.0.0.1)+ qwen3-embedding:4b,`/recall` skill 查對話存檔與本檔。評測與換電腦步驟見 repoManager `docs/context-system.md` §4b。
+🟡 Medium: [決策] embedding 模型選 qwen3-embedding:4b(14 題中文查詢 MRR 0.77,bge-m3 0.73,0.6b 0.67);0.6b 是備案。
+🟢 Low: [發現] cron 環境沒有 systemd user bus,`systemctl --user` 會失敗;檢查 Ollama 改用 `curl 127.0.0.1:11434/api/version`。

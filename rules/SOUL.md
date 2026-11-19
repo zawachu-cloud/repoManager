@@ -27,7 +27,7 @@
 
 1. `rules/USER.md`(已載入)。
 2. `contexts/memory/OBSERVATIONS.md`(在 repoManager;用 grep 按需查,不要整份讀)。
-3. 語意搜尋對話存檔(第 3 階段上線後,見 repoManager `docs/context-system.md`)。
+3. 語意搜尋對話存檔:`/recall` skill(`~/proj/my/repoManager/scripts/semantic_search.py query "<問題>"`,全在本機)。
 
 ## 邊界
 

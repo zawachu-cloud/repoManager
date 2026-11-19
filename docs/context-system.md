@@ -31,7 +31,7 @@
 ~/.local/share/ai-session-export/   (私有;age 加密後備份)
   │  gitleaks 類掃描通過才備份
   ▼
-semantic-search-skill 建索引(本地 embedding,經 Ollama;快取在本機,可重建,不備份)
+semantic-search-skill 建索引(本地 Ollama qwen3-embedding:4b;快取在本機,可重建,不備份)→ /recall
   │
   ▼
 observer(每日)→ OBSERVATIONS.md 追加 L1
@@ -117,18 +117,41 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 
 舊電腦處理掉前,先跑一次 `scripts/session-export.sh`,確認最後的對話已備份。
 
+### 4b. 語意搜尋(第 3 階段實作)
+
+| 元件 | 位置 / 設定 |
+|------|------|
+| embedding 服務 | Ollama 0.40.16,`~/.local/opt/ollama`(免 sudo 安裝),systemd user service `ollama.service`,**只聽 127.0.0.1:11434**,開了 linger(沒登入也會跑)。用 GPU(RTX 3050)。 |
+| 模型 | `qwen3-embedding:4b`(2.5GB,索引 185MB)。換模型要重建索引。 |
+| 搜尋工具 | `~/proj/my/semantic-search-skill`(upstream clone,未修改,venv 在 `.venv/`)。用 OpenAI 相容端點接 Ollama。 |
+| 入口 | `scripts/semantic_search.py index` / `query "<問題>" [-k] [--project] [--since] [--json]`。來源:`kiro/`、`claude_code/` 存檔 + `OBSERVATIONS.md`。 |
+| 索引 | `~/.local/share/semantic-search/sessions/`(700)。可重建,不備份。 |
+| 更新 | cron 12:30 的 `session-export.sh` 備份完後跑 `index`,只重算有變動的檔(約 10 秒)。`query` 預設也會先補索引。 |
+| skill | 全域 `~/.kiro/skills/recall/`(備份在 `templates/.kiro/skills/recall/`)。`/recall <要找的事>`,AI 也會自動使用。 |
+
+**模型評測**(2026-11-19,真實存檔 474 檔 / 15187 塊,14 題換句話說的中文查詢,看正確 session 排第幾):
+
+| 模型 | 第 1 名 | 前 5 名 | MRR | 全量建索引 | 查詢 |
+|------|:--:|:--:|:--:|:--:|:--:|
+| qwen3-embedding:0.6b | 7 | 14 | 0.67 | 6 分 | 1.1 秒 |
+| bge-m3 | 9 | 11 | 0.73 | 7 分 | 1.2 秒 |
+| **qwen3-embedding:4b** | 9 | 13 | **0.77** | 24 分 | 1.3 秒 |
+
+選 4b:準確度最好,建索引慢只影響第一次(之後每天增量)。0.6b 沒有大失誤,是換低階電腦時的備案。已知弱點:用很不同的說法描述技術事件(例如把「ETL 追補」說成「補跑歷史資料的批次」)會掉到 10 名左右,換個說法再查。
+
+**換電腦**:裝 Ollama(下載官方 `ollama-linux-amd64.tar.zst` 解壓到 `~/.local/opt/ollama`,複製 `~/.config/systemd/user/ollama.service`,`loginctl enable-linger`)→ `ollama pull qwen3-embedding:4b` → clone semantic-search-skill 並建 venv → `scripts/semantic_search.py index`(約 25 分鐘)。
+
 ## 5. 分階段計畫
 
 | 階段 | 內容 | 狀態 |
 |------|------|------|
 | 1 | `rules/` 三份檔、`OBSERVATIONS.md`、steering symlink、本文件 | ✅ 2026-11-18(`USER.md` 仍有 `<待補>`) |
 | 2 | fork ai_session_export,寫 Kiro adapter + 遮罩;匯出 Kiro 與 Claude Code;age 加密備份;cron 與 `/close-session` 串接 | ✅ 2026-11-19(見 §4a) |
-| 3 | 安裝 Ollama + 本地 embedding 模型,semantic-search-skill 指向本地端點,建索引;寫查詢 skill | 待做 |
+| 3 | 安裝 Ollama + 本地 embedding 模型,semantic-search-skill 指向本地端點,建索引;寫查詢 skill | ✅ 2026-11-19(見 §4b) |
 | 4 | observer(每日)/ reflector(**每週三**,含 §2b 的 USER.md 回顧)改用 `kiro-cli chat --no-interactive`(已確認此參數存在)取代 upstream 的 OpenCode;接 cron 與 `/close-session` | 待做 |
 
 ## 6. 未決事項
 
 - `USER.md` 的 `<待補>` 欄位(背景、討厭什麼);「目前的專案」依 §2b 由 AI 逐步補。
-- 本地 embedding 模型選哪個(第 3 階段實測中文檢索品質後決定)。
 - `age.txt` 的異地保存方式(老闆決定)。
 - 換電腦前要先跑一次匯出,確認最後幾天的對話進了存檔(`~/.kiro/sessions/` 不會跟著走)。

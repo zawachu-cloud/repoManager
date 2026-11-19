@@ -15,7 +15,8 @@
   | `/create-repo` | 建立一個新 repo(local 新建或從 git ssh url clone),並補齊必備結構、寫入第 1 份工作。 |
   | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
-  | `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+  | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
+| `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/pipeline/`)。
 - **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道老闆是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
@@ -41,11 +42,12 @@ repoManager/
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
 │   ├── docs/README.md
 │   ├── .kiro/agents/              # 角色 agent 備份(plan/code/aux/orchestrator),來源是 ~/.kiro/
-│   └── .kiro/skills/pipeline/     # pipeline skill 備份,來源是 ~/.kiro/
+│   └── .kiro/skills/{pipeline,recall}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
 │   ├── session-export.sh          # 對話匯出:cron 每天 12:30 全部增量+加密備份;--current 給 /close-session
 │   ├── session_archive.py         # 存檔 age 加密備份 / 還原(→ private_session_data)
+│   ├── semantic_search.py         # 本地語意搜尋(Ollama):index / query,給 /recall 用
 │   └── link-rules.sh              # 把 rules/*.md symlink 到 ~/.kiro/steering/(換機器跑一次)
 ├── .kiro/skills/
 │   ├── create-repo/SKILL.md

@@ -2,7 +2,7 @@
 # 匯出 AI 對話存檔(ai_session_export),通過 gitleaks 後加密備份到 private_session_data。
 #
 # 用法:
-#   scripts/session-export.sh            # cron 用:kiro + claude-code 全部增量 → gitleaks → 加密備份並 push
+#   scripts/session-export.sh            # cron 用:kiro + claude-code 全部增量 → gitleaks → 加密備份並 push → 語意索引增量
 #   scripts/session-export.sh --current  # /close-session 用:只匯出 $KIRO_SESSION_ID 這一個 session,不備份
 #
 # 設計見 docs/context-system.md §2a、§4a。log 在 ~/.local/share/ai-session-export/logs/。
@@ -49,3 +49,10 @@ fi
 echo "gitleaks: no leaks"
 
 python3 "${REPO_ROOT}/scripts/session_archive.py" backup
+
+# 語意搜尋索引:只重算有變動的檔(本地 Ollama)。失敗不影響已完成的備份。
+if systemctl --user is-active --quiet ollama 2>/dev/null || curl -sf http://127.0.0.1:11434/api/version >/dev/null; then
+  python3 "${REPO_ROOT}/scripts/semantic_search.py" index || echo "語意索引更新失敗,下次再試" >&2
+else
+  echo "Ollama 沒在跑,略過語意索引" >&2
+fi
