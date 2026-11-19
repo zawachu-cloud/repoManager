@@ -36,7 +36,7 @@
 
 1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向老闆確認**,不略過。
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
-3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。
+3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
 
 > **commit / push 由 AI 決定、直接執行,不用再問老闆**(老闆已授權);但**破壞性動作**(force push、`reset --hard`、drop/truncate)與**機密外洩風險**仍須先確認。push 前務必確認 `.env` 未被 add。
 

@@ -44,3 +44,4 @@ Date: 2026-11-19
 🔴 High: [約束] 對話存檔與 embedding 全部在本地,不送雲端(取代 2026-11-18 的雲端方案與 hr 類排除清單)。所有 repo 都收,記憶只排除憑證與資料內容(姓名、身分證、薪資數字、帳號)。
 🟡 Medium: [決策] 對話匯出走增量狀態檔(session id + updated_at)。`/close-session` 只匯出當下 session(`$KIRO_SESSION_ID`);cron 每天 12:30 跑全部增量補漏。
 🟡 Medium: [發現] Kiro 的 `session_created_reason` 不可靠:老闆直接開的主對話也標 `subagent`,不能用它過濾子 session。
+🟡 Medium: [決策] USER.md「目前的專案」不一次補齊;`/close-session` 更新當下 repo 那一行,每週三 reflector 依對話存檔回顧全部專案行。

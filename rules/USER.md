@@ -1,6 +1,7 @@
 # USER.md — 老闆是誰
 
 > L3 全域規則,每個 session 自動載入。**只寫確定的事**;標 `<待補>` 的請老闆填,互動中觀察到新偏好時提議更新(改動前先問)。
+> 例外:「目前的專案」只在 `/close-session`(更新當下 repo 那一行)與每週三回顧(依對話存檔)時由 AI 直接改,平時不動。
 > 依 grapeot/context-infrastructure:這份是效益最高的一份,填得越具體,AI 越不會給通用答案。
 
 ## 基本
@@ -19,10 +20,16 @@
 
 ## 目前的專案
 
-位於 `~/proj/my/`:`hr`、`hr_db`、`income_ana`、`line`、`stocktake`、`innerDoc`、`modelRouting`、`repoManager`。
+位於 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
 
-- 各專案的用途:<待補>
-- `hr`、`hr_db`、`income_ana` 與 payroll 相關資料視為**機密**,不送雲端、不寫進記憶細節。
+- `hr`:<待補>
+- `hr_db`:<待補>
+- `income_ana`:<待補>
+- `line`:<待補>
+- `stocktake`:<待補>
+- `innerDoc`:<待補>
+- `modelRouting`:<待補>
+- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)。
 
 ## 工作偏好(已確認)
 

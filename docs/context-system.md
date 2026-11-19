@@ -38,6 +38,15 @@ observer(每日)→ OBSERVATIONS.md 追加 L1
 reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → 老闆核准才合入
 ```
 
+### 2b. USER.md「目前的專案」的更新時機
+
+| 時機 | 範圍 | 依據 | 要不要問老闆 |
+|------|------|------|------|
+| `/close-session` | 只動當下 repo 那一行 | 本 session 做的事 + 該 repo 的 AGENTS.md | 不用,直接改並 commit |
+| 每週三回顧(reflector,第 4 階段) | 所有專案行 | 本週匯出的對話 Markdown | 專案行直接改;其他段落(偏好、溝通方式)只提候選,老闆核准才改 |
+
+平時 session 不動這段,避免根據片段對話寫錯。
+
 ### 2a. 怎麼知道哪些 session 已匯出
 
 ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`)做增量匯出。Kiro adapter 照同一機制:
@@ -67,6 +76,7 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 | 2026-11-18 | L3 用 `~/.kiro/steering/` symlink 載入 | default 與自建 agent 都吃得到,不必改每個 agent 的 `resources`。 |
 | 2026-11-18 | ~~embedding 可用雲端,但送出前不得含機密~~ | 已由 2026-11-19 決策取代。 |
 | 2026-11-19 | **embedding 全部在本地,不送雲端**;所有 repo 的對話都收(含 hr 類),只是不記憑證與資料內容 | 遮罩抓不準人名、薪資數字,全本地就不必賭遮罩。機器有 RTX 3050 8GB、16 核、15GB RAM,跑小型 embedding 模型(如 Qwen3-Embedding-0.6B、bge-m3)夠用。代價:要裝 Ollama 等本地服務,建索引花運算時間但不花錢。 |
+| 2026-11-19 | USER.md「目前的專案」只在 `/close-session`(當下 repo)與每週三回顧時由 AI 更新 | 依實際工作內容寫比一次讀 AGENTS.md 猜準。見 §2b。 |
 | 2026-11-19 | 匯出是**增量**的;`/close-session` 只匯出當下 session,cron 每天 12:30 跑全部增量補漏 | 收工要快,不必每次掃 700 多個 session;cron 負責補漏。見 §2a。 |
 
 ## 4. 機密處理(第 2、3 階段的硬性要求)
@@ -84,10 +94,10 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 | 1 | `rules/` 三份檔、`OBSERVATIONS.md`、steering symlink、本文件 | ✅ 2026-11-18(`USER.md` 仍有 `<待補>`) |
 | 2 | fork ai_session_export,寫 Kiro adapter + 排除 / 遮罩;匯出 Kiro 與 Claude Code;age 加密備份 | 待做 |
 | 3 | 安裝 Ollama + 本地 embedding 模型,semantic-search-skill 指向本地端點,建索引;寫查詢 skill | 待做 |
-| 4 | observer / reflector 改用 `kiro-cli chat --no-interactive`(已確認此參數存在)取代 upstream 的 OpenCode;接 cron 與 `/close-session` | 待做 |
+| 4 | observer(每日)/ reflector(**每週三**,含 §2b 的 USER.md 回顧)改用 `kiro-cli chat --no-interactive`(已確認此參數存在)取代 upstream 的 OpenCode;接 cron 與 `/close-session` | 待做 |
 
 ## 6. 未決事項
 
-- `USER.md` 的 `<待補>` 欄位(背景、討厭什麼);「目前的專案」由 AI 補。
+- `USER.md` 的 `<待補>` 欄位(背景、討厭什麼);「目前的專案」依 §2b 由 AI 逐步補。
 - 本地 embedding 模型選哪個(第 3 階段實測中文檢索品質後決定)。
 - 換電腦前要先跑一次匯出,確認最後幾天的對話進了存檔(`~/.kiro/sessions/` 不會跟著走)。
