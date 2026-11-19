@@ -58,7 +58,6 @@ Date: 2026-11-19
 🟢 Low: [發現] semantic-search 同一個檔案會佔掉太多結果名額,查詢時候選數要放大。4B 模型有一題排第 9,屬於已知限制,已寫進文件。
 🟡 Medium: [專案狀態] psapi-dotnet v1.4.22:GameHistoryInner、GameListInner、GetHostInfoInner 三支內部 endpoint 不驗 JWT,改掛 Inner IP 白名單(GameHistoryInner 原本只靠 JWT,拿掉前必須同版掛白名單,否則 IDOR);OfflineMiddleware 用完整路徑比對。QA/prod 部署前維運要確認後台 server IP 在白名單。**待決**:dev 發現 docker 閘道位址是可信代理,同機程式可偽造 X-Forwarded-For 繞過白名單(既有漏洞),建議先記文件並請維運查 stage/prod;GameHistory、V2、All、Diff 尚無白名單,是否另開一案待老闆決定。
 🟡 Medium: [偏好] 老闆在 AI 動手前,會再確認一次它對需求的理解(例如「Inner 是不是不套 JWT」)。AI 交付前先用一句話複述範圍與效果,老闆能用這句話快速確認。
-🟢 Low: [專案狀態] WSL 的 sshd(ssh.socket 監聽 0.0.0.0:22,允許密碼登入)。老闆 2026-11-19 表示目前不用 ssh 進 WSL,建議 `sudo systemctl disable --now ssh.socket ssh` 停用,待老闆執行。
 🟡 Medium: [完成] 第 4 階段(repoManager):唯讀 `heartbeat` agent(無 write/shell,結果由腳本寫入)跑 observer(每天 12:30,匯出與索引之後)與 reflector(每週三)。heartbeat 自己的 session 不匯出,避免觀察自己。設計見 `docs/context-system.md`。
 🟡 Medium: [發現] observer 挑「新增對話」改用檔案大小判斷,不用 mtime。`--full` 重匯出會讓所有檔案 mtime 變新,dry-run 一次抓了 40 個舊 session。
 🔴 High: [經驗] 腳本要先拿真實資料離線驗證確定性部分(GC、USER.md 專案行替換)再接 cron。這次抓到兩個 bug:專案段落的 regex 會越過清單吃掉後面的段落,以及專案行被重新排序。
