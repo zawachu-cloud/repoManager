@@ -98,3 +98,15 @@ orchestrator 當總架構師(opus),直接跟老闆討論與規劃;子項目細�
 - `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
 - 安全網:`code`/`aux` 的 `shell.deniedCommands` 擋下破壞性指令(`rm -rf`、`git reset --hard`、force push、`git clean -f`、`sudo`、`mkfs`、`dd if=`、關機、`chmod -R 777`、寫入 `/dev/sd`、SQL `DROP/TRUNCATE`),這些仍會被拒,符合「破壞性動作先確認」。此清單為 best-effort,無法涵蓋所有危險寫法。
 - 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。
+
+### 5b. 拋棄式測試庫的 lab 規則
+
+- **為什麼全域不放行 DROP**:`deniedCommands` 與 `permissions` 只做字串比對,看不出 DROP 打到哪個庫,一行指令又能串多個動作。所以全域 `code` 一律擋 `DROP/TRUNCATE`,不改。
+- **何時可用**:該 repo 只碰拋棄式測試容器 / 測試庫(壞了重建即可),不碰任何正式或共用資料。
+- **怎麼套用**:
+  1. 複製 `templates/.kiro/agents/code-lab.json` 到該 repo 的 `.kiro/agents/code.json`(`name` 維持 `code`,repo 內同名 agent 會覆蓋全域)。
+  2. 把 `__PROTECTED__` 換成受保護容器的名稱關鍵字(同一台主機上不可動的服務)。
+  3. 在該 repo 的 AGENTS.md 註明:覆蓋了全域 `code`、可 DROP 的測試容器 / 庫清單、受保護容器清單。
+- **範本差異**:相對全域 `code`,只移除 `DROP/TRUNCATE` 的擋規則,並加上受保護容器的 `docker stop/rm/restart/kill/exec/update/rename` 與 `docker compose down` 擋規則。其餘(`rm -`、force push 等)照擋。`docker ps`、`docker inspect` 不擋,用來確認受保護容器狀態。
+- **範本來源**:`code-lab.json` 的來源是 `templates/`,不在 `~/.kiro/`,不列入 `scripts/sync-kiro.sh`。
+- **限制可刪的庫名**:字串比對做不到,改在資料庫帳號權限做(例如只授權 `tmp\_%` 的帳號)。

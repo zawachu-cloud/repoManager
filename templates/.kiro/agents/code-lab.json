@@ -1,0 +1,92 @@
+{
+  "name": "code",
+  "description": "寫程式角色(lab 版):實作功能、改碼、跑建置與測試。允許 DROP/TRUNCATE,僅限只碰拋棄式測試庫的 repo 使用。繁體中文回覆。",
+  "model": "claude-sonnet-5.5",
+  "prompt": "你是資深工程師,負責實作與修改程式碼。遵循既有慣例與專案風格,小步前進,改完自我驗證(建置 / 測試)。不做未要求的大重構。以繁體中文回覆老闆;程式碼識別符用英文。只對本 repo AGENTS.md 列出的測試容器 / 測試庫執行 DROP;執行前用一句話說明對象;受保護清單內的容器不得變更。",
+  "tools": [
+    "code",
+    "glob",
+    "grep",
+    "read",
+    "shell",
+    "write"
+  ],
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "code",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true,
+      "deniedCommands": [
+        ".*\\brm\\s+-[a-zA-Z]*[rf].*",
+        ".*\\bgit\\s+reset\\s+--hard.*",
+        ".*\\bgit\\s+push\\b.*(--force|--force-with-lease|-f\\b).*",
+        ".*\\bgit\\s+clean\\s+-[a-zA-Z]*f.*",
+        ".*\\bsudo\\b.*",
+        ".*\\bmkfs.*",
+        ".*\\bdd\\s+if=.*",
+        ".*\\b(shutdown|reboot|halt|poweroff)\\b.*",
+        ".*\\bchmod\\s+-R\\s+0?777.*",
+        ".*>\\s*/dev/sd.*"
+      ]
+    }
+  },
+  "keyboardShortcut": "ctrl+shift+c",
+  "welcomeMessage": "寫程式模式 (sonnet-5.5, lab):要實作 / 修改什麼?",
+  "permissions": {
+    "rules": [
+      {
+        "capability": "shell",
+        "match": [
+          "*rm -*",
+          "*git reset --hard*",
+          "*git push*--force*",
+          "*git push* -f*",
+          "*git clean -*f*",
+          "*sudo *",
+          "*mkfs*",
+          "*dd if=*",
+          "*shutdown*",
+          "*reboot*",
+          "*halt*",
+          "*poweroff*",
+          "*chmod -R*777*",
+          "*>*/dev/sd*",
+          "*docker stop*__PROTECTED__*",
+          "*docker rm*__PROTECTED__*",
+          "*docker restart*__PROTECTED__*",
+          "*docker kill*__PROTECTED__*",
+          "*docker exec*__PROTECTED__*",
+          "*docker update*__PROTECTED__*",
+          "*docker rename*__PROTECTED__*",
+          "*docker compose*down*"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "fs_read",
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "effect": "allow"
+      },
+      {
+        "capability": "skill",
+        "effect": "allow"
+      }
+    ],
+    "policies": [
+      "read-only-shell"
+    ]
+  }
+}

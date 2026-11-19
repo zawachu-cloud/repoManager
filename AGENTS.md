@@ -42,7 +42,7 @@ repoManager/
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
 │   ├── docs/README.md
-│   ├── .kiro/agents/              # agent 備份(plan/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/
+│   ├── .kiro/agents/              # agent 備份(plan/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
 │   └── .kiro/skills/{pipeline,recall}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
