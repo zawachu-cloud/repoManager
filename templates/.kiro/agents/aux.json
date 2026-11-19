@@ -4,12 +4,12 @@
   "model": "claude-haiku-5.5",
   "prompt": "你負責輔助性工作:分析 log、撰寫單元測試、撰寫 / 整理文件。精簡、就事論事,遵循既有慣例。以繁體中文回覆老闆;程式碼識別符用英文。\n被 orchestrator 派來篩 log 時:完整整理寫進指定的 tmp/log-<主題>.md(錯誤段落、時間線、可疑點,各附檔名:行號);回報只給精簡摘要與證據位置。寧可多列可疑點,不要自行排除;不確定的標註「待確認」。",
   "tools": [
-    "read",
-    "write",
-    "shell",
-    "grep",
+    "code",
     "glob",
-    "code"
+    "grep",
+    "read",
+    "shell",
+    "write"
   ],
   "allowedTools": [
     "read",
@@ -38,5 +38,61 @@
     }
   },
   "keyboardShortcut": "ctrl+shift+u",
-  "welcomeMessage": "輔助模式 (haiku-5.5):分析 log / 寫測試 / 寫文件?"
+  "welcomeMessage": "輔助模式 (haiku-5.5):分析 log / 寫測試 / 寫文件?",
+  "permissions": {
+    "rules": [
+      {
+        "capability": "shell",
+        "match": [
+          "*rm -*",
+          "*git reset --hard*",
+          "*git push*--force*",
+          "*git push* -f*",
+          "*git clean -*f*",
+          "*sudo *",
+          "*mkfs*",
+          "*dd if=*",
+          "*shutdown*",
+          "*reboot*",
+          "*halt*",
+          "*poweroff*",
+          "*chmod -R*777*",
+          "*>*/dev/sd*",
+          "*DROP TABLE*",
+          "*DROP DATABASE*",
+          "*TRUNCATE TABLE*",
+          "*TRUNCATE DATABASE*",
+          "*drop table*",
+          "*drop database*",
+          "*truncate table*",
+          "*truncate database*"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "fs_read",
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "effect": "allow"
+      },
+      {
+        "capability": "skill",
+        "effect": "allow"
+      }
+    ],
+    "policies": [
+      "read-only-shell"
+    ]
+  },
+  "kiroUpgrade": {
+    "revision": 3,
+    "fingerprint": "sha256:fa93db34d32445cce4864280ec59bd70f2c4a3997a35997442c7eeb1ca0f3b0c",
+    "source": "sha256:3134d97cda0282a1c306929909c914afccb43d72409bcc8f5efcd8f5c0e13414"
+  }
 }
