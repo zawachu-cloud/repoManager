@@ -69,3 +69,13 @@ Date: 2026-11-19
 🟡 Medium: [偏好] 老闆在 AI 動手前,會再確認一次它對需求的理解(例如「Inner 是不是不套 JWT」)。AI 交付前先用一句話複述範圍與效果,老闆能用這句話快速確認。
 🟢 Low: [驗證] 驗證 steering 規則是否生效,用「不要用任何工具,只回答 USER.md 的稱呼」這類短問題,在 /tmp 和 stocktake 各測一次即可。
 🟢 Low: [專案狀態] 老闆在 WSL 設定 openssh-server,讓 Windows 端能免密碼 ssh 進來。sshd 仍允許密碼登入,AI 建議改成只允許金鑰,老闆還沒回覆。
+
+Date: 2026-11-19
+
+🟡 Medium: [完成] 第 4 階段(repoManager):唯讀 `heartbeat` agent(無 write/shell,結果由腳本寫入)跑 observer(每天 12:30,匯出與索引之後)與 reflector(每週三)。heartbeat 自己的 session 不匯出,避免觀察自己。設計見 `docs/context-system.md`。
+🟡 Medium: [發現] observer 挑「新增對話」改用檔案大小判斷,不用 mtime。`--full` 重匯出會讓所有檔案 mtime 變新,dry-run 一次抓了 40 個舊 session。
+🔴 High: [經驗] 腳本要先拿真實資料離線驗證確定性部分(GC、USER.md 專案行替換)再接 cron。這次抓到兩個 bug:專案段落的 regex 會越過清單吃掉後面的段落,以及專案行被重新排序。
+🟡 Medium: [約束] cron 的 PATH 不含 `~/.local/bin`(kiro-cli、gitleaks 都在那),腳本要自己補 PATH,並用乾淨環境實跑一次才算驗證過。
+🟢 Low: [發現] `kiro-cli chat --no-interactive` 偶爾遇到服務端暫時性錯誤(dispatch failure),`run_kiro` 加一次自動重試。新檔案要先 `git add` 再 commit,否則 commit 會失敗。
+🟢 Low: [專案狀態] Kiro CLI 從 2.27.0 升到 3.5.0(2026-11-19)。
+🟡 Medium: [偏好] 老闆收工時說「都先不處理」,代表待決事項只記進文件,AI 不要再追問或擅自動手。psapi-dotnet 有 3 個 `[261104]` 簽章文件是 untracked,不屬於該次任務,AI 不 commit。
