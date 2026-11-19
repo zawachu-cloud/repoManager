@@ -44,6 +44,8 @@ repoManager/
 │   └── .kiro/skills/pipeline/     # pipeline skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
+│   ├── session-export.sh          # 對話匯出:cron 每天 12:30 全部增量+加密備份;--current 給 /close-session
+│   ├── session_archive.py         # 存檔 age 加密備份 / 還原(→ private_session_data)
 │   └── link-rules.sh              # 把 rules/*.md symlink 到 ~/.kiro/steering/(換機器跑一次)
 ├── .kiro/skills/
 │   ├── create-repo/SKILL.md

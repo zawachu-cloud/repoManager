@@ -62,8 +62,9 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
   - `/close-session`:**只匯出當下這個 session**。Kiro 會把目前 session id 放在環境變數 `KIRO_SESSION_ID`,對應 `~/.kiro/sessions/cli/$KIRO_SESSION_ID.json`(2026-11-19 已驗證)。
   - cron **每天 12:30**(系統時區 Asia/Taipei):跑全部增量,補上沒下 `/close-session` 的 session,以及收工後又繼續聊的 session。crontab:`30 12 * * *`。
 - WSL 注意:cron 只在 WSL 開著時才跑(目前 cron 有在跑,開機自動啟用)。12:30 電腦沒開就略過那天,下次執行會補上,不會掉資料。
-- **`session_created_reason` 不能用來判斷子 session**:本 session 是老闆直接開的主對話,欄位卻是 `subagent`。adapter 要改用其他欄位(例如 parent id)區分,第 2 階段實作時確認。
-- 對帳:`~/.kiro/sessions/cli/*.json` 的數量(扣掉子 session 與空 session)應等於狀態檔筆數。
+- **子 session 用 `parent_session_id` 判斷**(只有 30 個有,父 session 都存在)。`session_created_reason` 不可靠:老闆直接開的主對話也標 `subagent`。
+- 對帳(2026-11-19 首次全量):727 個 `.json` = 470 匯出 + 30 子 session + 227 空對話,無遺漏。Claude Code 8 個 transcript 中 3 個有對話,全數匯出。
+- 增量判斷實際用 `.json` 與 `.jsonl` 的 mtime + 大小(對話先寫進 `.jsonl`,`updated_at` 較晚才更新)。
 - 要全部重來用 `--full`。
 
 ## 3. 決策紀錄
@@ -83,16 +84,45 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 
 所有資料都留在本機(2026-11-19 決策),所以不排除任何 repo 的對話。仍要做:
 
-1. **遮罩**:金鑰格式(`sk-…`、`AKIA…`、JWT、`service_role`)、密碼、連線字串、身分證字號、銀行帳號 → `[REDACTED]`。存檔會 age 加密後備份到外部,所以匯出時就遮。
+1. **遮罩**:金鑰格式(`sk-…`、`AKIA…`、JWT、`glrt-`、`sb_secret_` 等)、`secret` 類變數的值、連線字串密碼、「密碼是 …」、身分證字號(檢查碼正確才遮)、銀行帳號 → `[REDACTED]`。完整規則見 fork 的 README「Redaction」。首次全量共遮 194 處。
 2. **掃描**:備份前用 gitleaks 類工具掃匯出結果,有命中就先處理再備份。
 3. **記憶不寫兩類**:憑證(密碼、key、token)與資料內容(員工姓名、身分證、薪資數字、銀行帳號)。可以寫專案用途與決策。
+
+### 4a. 工具與備份(第 2 階段實作)
+
+| 元件 | 位置 | 說明 |
+|------|------|------|
+| 匯出工具 | `~/proj/my/ai_session_export`(private fork;`origin`=zawachu-cloud,`upstream`=grapeot) | 新增 `--source kiro`、`--session-id`;`redact.py` 對所有來源遮罩。venv 在 `.venv/`。 |
+| 入口腳本 | `scripts/session-export.sh` | 無參數(cron):kiro + claude-code 增量 → gitleaks → 加密備份並 push。`--current`(close-session):只匯出 `$KIRO_SESSION_ID`。 |
+| 加密備份 | `scripts/session_archive.py backup / restore` | 每個檔各自 age 加密成 `blobs/<hash>.age`,檔名用雜湊(原檔名含標題),對照表 `manifest.json.age` 也加密。只重新加密有變動的檔(本機 `.backup_index.json` 記 sha256)。 |
+| 備份 repo | `~/proj/my/private_session_data` → `zawachu-cloud/private_session_data`(private) | 只有加密檔。 |
+| 金鑰 | `~/proj/my/age.txt`(600,不在任何 repo) | **金鑰遺失 = 備份無法還原**。要另外安全保存(例如密碼管理器)。 |
+| 存檔 | `~/.local/share/ai-session-export/{kiro,claude_code}/`、`logs/cron.log` | 權限 700/600。 |
+| cron | `30 12 * * *` | 已安裝;另一筆 `kiro-cli update` 未動。 |
+
+gitleaks 有命中時,cron **不備份**並以 exit 2 結束,看 `logs/gitleaks-last.json`(原值已遮蔽),到 `redact.py` 補規則後 `--full` 重匯。
+
+**換電腦**:
+
+```bash
+git clone git@github.com:zawachu-cloud/repoManager.git ~/proj/my/repoManager
+git clone git@github.com:zawachu-cloud/ai_session_export.git ~/proj/my/ai_session_export
+git clone git@github.com:zawachu-cloud/private_session_data.git ~/proj/my/private_session_data
+# 放回 ~/proj/my/age.txt(chmod 600)
+cd ~/proj/my/ai_session_export && python3 -m venv .venv && .venv/bin/pip install -e .
+python3 ~/proj/my/repoManager/scripts/session_archive.py restore
+~/proj/my/repoManager/scripts/link-rules.sh
+# 重裝 crontab 那一行(見上表)
+```
+
+舊電腦處理掉前,先跑一次 `scripts/session-export.sh`,確認最後的對話已備份。
 
 ## 5. 分階段計畫
 
 | 階段 | 內容 | 狀態 |
 |------|------|------|
 | 1 | `rules/` 三份檔、`OBSERVATIONS.md`、steering symlink、本文件 | ✅ 2026-11-18(`USER.md` 仍有 `<待補>`) |
-| 2 | fork ai_session_export,寫 Kiro adapter + 排除 / 遮罩;匯出 Kiro 與 Claude Code;age 加密備份 | 待做 |
+| 2 | fork ai_session_export,寫 Kiro adapter + 遮罩;匯出 Kiro 與 Claude Code;age 加密備份;cron 與 `/close-session` 串接 | ✅ 2026-11-19(見 §4a) |
 | 3 | 安裝 Ollama + 本地 embedding 模型,semantic-search-skill 指向本地端點,建索引;寫查詢 skill | 待做 |
 | 4 | observer(每日)/ reflector(**每週三**,含 §2b 的 USER.md 回顧)改用 `kiro-cli chat --no-interactive`(已確認此參數存在)取代 upstream 的 OpenCode;接 cron 與 `/close-session` | 待做 |
 
@@ -100,4 +130,5 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 
 - `USER.md` 的 `<待補>` 欄位(背景、討厭什麼);「目前的專案」依 §2b 由 AI 逐步補。
 - 本地 embedding 模型選哪個(第 3 階段實測中文檢索品質後決定)。
+- `age.txt` 的異地保存方式(老闆決定)。
 - 換電腦前要先跑一次匯出,確認最後幾天的對話進了存檔(`~/.kiro/sessions/` 不會跟著走)。

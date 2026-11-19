@@ -21,6 +21,8 @@ cp -r templates/.kiro/agents templates/.kiro/skills ~/.kiro/   # 還原角色 ag
 scripts/link-rules.sh                                          # 掛上全域規則
 ```
 
+對話存檔的還原(ai_session_export、private_session_data、age 金鑰、cron)見 `docs/context-system.md` §4a。
+
 ## Model routing 與 pipeline
 
 依任務用不同 model:`plan`=opus-5.5、`code`=sonnet-5.5、`aux`=haiku-5.5(log、測試、文件)。設定只維護全域 `~/.kiro/`,所有 repo 共用。

@@ -37,7 +37,7 @@ Date: 2026-11-18
 🔴 High: [約束] 對話存檔要送雲端 embedding 前,必須先排除機密專案(hr、hr_db、income_ana、payroll)並遮罩金鑰/個資,再用 gitleaks 類工具掃過;遮罩在匯出時做,存檔本身就要乾淨。
 🟡 Medium: [決策] context-infrastructure 架構整合進 repoManager(private repo),不另開 context repo。ai_session_export、semantic-search-skill 當外部工具安裝,不搬進來。
 🟡 Medium: [決策] L3 規則透過 `scripts/link-rules.sh` symlink 到 `~/.kiro/steering/`,所有 repo 自動載入。
-🟡 Medium: [待辦] ai_session_export 不支援 Kiro CLI,需自寫 adapter(資料在 `~/.kiro/sessions/cli/`,`<id>.json` 為 metadata、`<id>.jsonl` 為對話)。
+🟡 Medium: [待辦→2026-11-19 完成] ai_session_export 不支援 Kiro CLI,需自寫 adapter。
 
 Date: 2026-11-19
 
@@ -45,3 +45,6 @@ Date: 2026-11-19
 🟡 Medium: [決策] 對話匯出走增量狀態檔(session id + updated_at)。`/close-session` 只匯出當下 session(`$KIRO_SESSION_ID`);cron 每天 12:30 跑全部增量補漏。
 🟡 Medium: [發現] Kiro 的 `session_created_reason` 不可靠:老闆直接開的主對話也標 `subagent`,不能用它過濾子 session。
 🟡 Medium: [決策] USER.md「目前的專案」不一次補齊;`/close-session` 更新當下 repo 那一行,每週三 reflector 依對話存檔回顧全部專案行。
+🟡 Medium: [完成] 第 2 階段:Kiro adapter + 遮罩(fork `zawachu-cloud/ai_session_export`)、加密備份(`zawachu-cloud/private_session_data`)、cron 12:30、`/close-session` 匯出步驟。工具位置與換電腦步驟見 repoManager `docs/context-system.md` §4a。
+🔴 High: [約束] 遮罩規則要拿真實存檔跑 gitleaks 調校,再回頭查誤判。第一次全量 gitleaks 抓到 12 筆漏網(GitLab runner token、Supabase key),調完再清掉誤判(「密碼是 Supabase 那組」這類中文句子、sudoers NOPASSWD)。
+🟢 Low: [發現] upstream ai_session_export 的 `--source all` 遇到沒裝的工具(OpenCode)會直接報錯,所以入口腳本逐一跑 kiro、claude-code。

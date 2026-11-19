@@ -49,6 +49,15 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 **破壞性動作**(force push、`reset --hard`、drop/truncate)仍須先向老闆確認。
 若該 repo 自己的 `AGENTS.md` 另有部署/push 規範(如先 DB 後前端),以該 repo 規範為準。
 
+## 步驟 5:匯出本 session 對話(最後做,才包含上面的收尾內容)
+
+```bash
+~/proj/my/repoManager/scripts/session-export.sh --current
+```
+- 只匯出 `$KIRO_SESSION_ID` 這一個 session 到 `~/.local/share/ai-session-export/kiro/`(已遮罩金鑰),不掃其他 session、不備份。加密備份由每天 12:30 的 cron 做。
+- 失敗(例如 `KIRO_SESSION_ID` 未設定、venv 不存在)只回報,不擋收尾;cron 會補上。
+- 設計見 repoManager `docs/context-system.md` §2a。
+
 ## 輸出
 
 給一份收尾報告:
@@ -56,4 +65,5 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 2. git 狀態:乾淨 / 有變更(列清單)+ 機密未外洩確認。
 3. 文件一致性:一致 / 已補正 / 建議事項;USER.md 專案行:未變 / 已更新(寫出新內容)。
 4. commit / push:已提交的 commit 訊息與是否已 push。
+5. 對話匯出:已匯出(檔名)/ 失敗(原因,cron 會補)。
 最後一句明確說:**已收尾完成** 或 **還有 N 項待處理**。
