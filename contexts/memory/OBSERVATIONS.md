@@ -38,3 +38,8 @@ Date: 2026-11-18
 🟡 Medium: [決策] context-infrastructure 架構整合進 repoManager(private repo),不另開 context repo。ai_session_export、semantic-search-skill 當外部工具安裝,不搬進來。
 🟡 Medium: [決策] L3 規則透過 `scripts/link-rules.sh` symlink 到 `~/.kiro/steering/`,所有 repo 自動載入。
 🟡 Medium: [待辦] ai_session_export 不支援 Kiro CLI,需自寫 adapter(資料在 `~/.kiro/sessions/cli/`,`<id>.json` 為 metadata、`<id>.jsonl` 為對話)。
+
+Date: 2026-11-19
+
+🔴 High: [約束] 對話存檔與 embedding 全部在本地,不送雲端(取代 2026-11-18 的雲端方案與 hr 類排除清單)。所有 repo 都收,記憶只排除憑證與資料內容(姓名、身分證、薪資數字、帳號)。
+🟡 Medium: [決策] 對話匯出走增量狀態檔(session id + updated_at),`/close-session` 與 cron 跑同一支,漏跑會自動補。
