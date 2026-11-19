@@ -65,3 +65,7 @@ Date: 2026-11-19
 🟢 Low: [發現] `kiro-cli chat --no-interactive` 偶爾遇到服務端暫時性錯誤(dispatch failure),`run_kiro` 加一次自動重試。新檔案要先 `git add` 再 commit,否則 commit 會失敗。
 🟢 Low: [專案狀態] Kiro CLI 從 2.27.0 升到 3.5.0(2026-11-19)。
 🟡 Medium: [偏好] 老闆收工時說「都先不處理」,代表待決事項只記進文件,AI 不要再追問或擅自動手。psapi-dotnet 有 3 個 `[261104]` 簽章文件是 untracked,不屬於該次任務,AI 不 commit。
+🔴 High: [約束] shell deny 規則只比對指令字串,判斷不出 DROP 實際打到哪個庫(一行可串多個指令,連線目標在 env)。全域 code/aux 保留 DROP/TRUNCATE 攔截;只碰拋棄式測試庫的 repo 才放 repo 內 `.kiro/agents/code.json`(範本 `templates/.kiro/agents/code-lab.json`,規範 `docs/repo-standard.md` §5b)。要限制可刪的庫名,改在 DB 帳號權限做。
+🟡 Medium: [發現] Kiro CLI 3.x 升級把 agent 的 regex `deniedCommands` 自動轉成 `permissions.rules` glob,轉換時丟掉單字邊界與空白(例如 `\brm\s+-` 變 `*rm*-*`),information_schema 加 `-` 參數也會被擋。已改成帶空白的 glob(commit 87e99a4)。手改 permissions 後要留意 kiroUpgrade 會不會蓋回。
+🟡 Medium: [決策] AI 被指令規則擋時,不改寫指令(包成腳本檔、藏進 SQL 檔)繞過,停下來回報,由老闆決定是否改規則。派 subagent 時要求被擋就附指令原文與擋下訊息原文,不只給摘要。
+🟡 Medium: [專案狀態] dbUpgrade(`~/proj/db/dbUpgrade`)已套用 lab 規則:可對 lab_mysql57_test / lab_mysql80_test 的庫 DROP,gameapi 容器的變更類 docker 指令擋。repo 內 code agent 是否覆蓋 orchestrator 派出的 subagent 尚未實測。dbUpgrade 沒設 remote,只有本地 commit。
