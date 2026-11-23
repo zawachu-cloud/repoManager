@@ -30,6 +30,7 @@ done
 grep -qE '(^|/)\.env($|\*)' .gitignore && echo "✅ .env 已忽略" || echo "❌ .gitignore 未忽略 .env"
 grep -q '!.env.example' .gitignore && echo "✅ 保留 .env.example" || echo "⚠️ 建議加 !.env.example"
 grep -qE '(^|/)tmp/' .gitignore && echo "✅ tmp/ 已忽略" || echo "❌ .gitignore 未忽略 tmp/"
+[ -f .kiroignore ] && grep -qE '^\s*/?tmp(/|/\*)?\s*$' .kiroignore && echo "❌ .kiroignore 列了 tmp/(會擋指定讀取)" || echo "✅ .kiroignore 未擋 tmp/"
 ```
 
 ### C. 機密未外洩(git 已追蹤清單)

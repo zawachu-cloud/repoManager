@@ -77,3 +77,4 @@ Date: 2026-11-23
 🟡 Medium: [決策] sync 時發現 `~/.kiro/agents/` 被 Orca 工具加了 hooks,內含這台電腦專用路徑,不放進 templates 備份。只 commit 自己改的檔。
 🟢 Low: [發現] 備份到 private_session_data 的檔案以雜湊命名,對照表加密另存,GitHub 上看不到對話標題。gitleaks 會把本機備份索引(sha256)誤判成金鑰,要在 `.gitleaks.toml` 排除,否則 cron 備份被擋。
 🟢 Low: [決策] 要從存檔移除某個 session 得做三件事:刪 Markdown 並移出索引、加進匯出排除清單(否則 cron 會重匯)、加密備份的 git 歷史仍留舊版。老闆要求刪記憶時,只刪 OBSERVATIONS 等記憶,對話存檔預設保留。
+🟡 Medium: [決策] .kiroignore 會擋指定讀取,.gitignore 只讓搜尋略過;tmp/ 只放 .gitignore。起因:hr 的 .kiroignore 擋 tmp/,pipeline 讀不回計畫檔與老闆放的資料。

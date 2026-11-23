@@ -70,7 +70,7 @@ repoManager/
 - **中文回覆**:一律用**繁體中文**回覆老闆。
 - **語言**:文件與對話用繁體中文;程式碼識別符用英文。
 - **機密**:真實金鑰只放 `.env`(已 gitignore),版控只放 `.env.example`(無真值)。`service_role` 類高權限金鑰嚴禁進版控。
-- **暫存**:草稿/實驗放 `tmp/`,不進版控、也不需讀入 context。
+- **暫存**:草稿/實驗/老闆給 AI 看的資料放 `tmp/`,不進版控;一般搜尋會略過(靠 .gitignore),指定檔案時可讀。`.kiroignore` 不可列 `tmp/`(會連指定讀取一起擋)。
 - **文件分層省 token**:AGENTS.md 只放最關鍵摘要,細節放 `docs/` 或 skill;避免兩處重複。
 - **skill 格式**:每個 skill 是 `.kiro/skills/<name>/SKILL.md`,以 YAML frontmatter(`name` + `description`)開頭,用 `$ARGUMENTS` 接參數。
 - **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問老闆(老闆已授權)。

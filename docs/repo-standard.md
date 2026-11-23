@@ -14,7 +14,7 @@
 | `firstTask.md` | 檔案 | ✅(暫存) | 第 1 份工作的說明。切到此 repo 開新 session 時,第一件事就是讀它。完成後可刪或歸檔到 `docs/`。 |
 | `.env` | 檔案 | ❌ | 機密資訊(金鑰/密碼/連線字串)。**絕不進版控**。 |
 | `.env.example` | 檔案 | ✅ | `.env` 的範本(只有 key、無真值),讓他人知道需要哪些變數。 |
-| `tmp/` | 目錄 | ❌ | 暫存/草稿/實驗資料。**不進版控**。 |
+| `tmp/` | 目錄 | ❌ | 暫存/草稿/實驗資料。**不進版控**。一般搜尋略過,指定檔案可讀;若 repo 有 `.kiroignore`,不可列 `tmp/`。 |
 | `.gitignore` | 檔案 | ✅ | 至少忽略 `.env`、`.env.*`(保留 `!.env.example`)、`tmp/`。 |
 | `.git/` | 目錄 | — | git 儲存庫(`git init` 或 clone 產生)。 |
 
@@ -48,6 +48,7 @@
 
 - **結構**:§1 必備項目是否齊全(`AGENTS.md`、`docs/`、`.env.example`、`.gitignore`、`.git/`;`firstTask.md`/`tmp/` 視階段而定)。
 - **.gitignore 有效性**:`.env`、`.env.*`、`tmp/` 確實被忽略;`.env.example` 未被忽略。
+- **.kiroignore(若存在)**:未列 `tmp/`(會擋指定讀取)。
 - **機密外洩**:`git ls-files` 不應出現 `.env`、`.env.*`(除 `.env.example`)、`tmp/` 內容。
 - **文件一致**:`AGENTS.md` 有指向 `docs/`;`docs/` 非空。
 - **收尾狀態**:套用 §3 的三項檢查,回報是否可安全收尾。
