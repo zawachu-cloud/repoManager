@@ -20,7 +20,7 @@
 
 位於 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
 
-- `hr`:小型公司人事薪資、排班打卡、每日帳目系統(Supabase + Cloudflare)。近期調整工時更正偵測,每日帳目改唯讀並由 AI 寫入 DB。
+- `hr`:小型公司人事薪資、排班打卡、收支記帳系統(Supabase + Cloudflare)。近期:LINE Pay 收入入帳日自動順延 2 個銀行營業日,並以結算單對帳修正 prod 紀錄。
 - `hr_db`:hr 的資料庫實驗場。連 Supabase 查詢、驗證計薪假設、起草 migration 草案。select 預設 prod,其餘寫入預設 dev。
 - `income_ana`:火鍋店營收與人力成本分析(不再做 hr 記帳匯入)。方向:重算 10 月損益、補齊完整 11 月營業額。
 - `line`:<待補>
