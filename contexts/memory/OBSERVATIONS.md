@@ -69,3 +69,11 @@ Date: 2026-11-19
 🟡 Medium: [發現] Kiro CLI 3.x 升級把 agent 的 regex `deniedCommands` 自動轉成 `permissions.rules` glob,轉換時丟掉單字邊界與空白(例如 `\brm\s+-` 變 `*rm*-*`),information_schema 加 `-` 參數也會被擋。已改成帶空白的 glob(commit 87e99a4)。手改 permissions 後要留意 kiroUpgrade 會不會蓋回。
 🟡 Medium: [決策] AI 被指令規則擋時,不改寫指令(包成腳本檔、藏進 SQL 檔)繞過,停下來回報,由老闆決定是否改規則。派 subagent 時要求被擋就附指令原文與擋下訊息原文,不只給摘要。
 🟡 Medium: [專案狀態] dbUpgrade(`~/proj/db/dbUpgrade`)已套用 lab 規則:可對 lab_mysql57_test / lab_mysql80_test 的庫 DROP,gameapi 容器的變更類 docker 指令擋。repo 內 code agent 是否覆蓋 orchestrator 派出的 subagent 尚未實測。dbUpgrade 沒設 remote,只有本地 commit。
+
+Date: 2026-11-23
+
+🟡 Medium: [偏好] 老闆認為 USER.md 的背景、擅長領域、會讓你煩的事等空欄位沒有意義,決定不填,已刪除這些欄位。AI 不要再提醒補填。
+🟡 Medium: [決策] hr、hr_db、stocktake 的 AGENTS.md 與全域 USER.md 重複的 DB additive 規則和行數上限,改成指向全域規則,只留 repo 自己的細節。同一條規則只寫一處。
+🟡 Medium: [決策] sync 時發現 `~/.kiro/agents/` 被 Orca 工具加了 hooks,內含這台電腦專用路徑,不放進 templates 備份。只 commit 自己改的檔。
+🟢 Low: [發現] 備份到 private_session_data 的檔案以雜湊命名,對照表加密另存,GitHub 上看不到對話標題。gitleaks 會把本機備份索引(sha256)誤判成金鑰,要在 `.gitleaks.toml` 排除,否則 cron 備份被擋。
+🟢 Low: [決策] 要從存檔移除某個 session 得做三件事:刪 Markdown 並移出索引、加進匯出排除清單(否則 cron 會重匯)、加密備份的 git 歷史仍留舊版。老闆要求刪記憶時,只刪 OBSERVATIONS 等記憶,對話存檔預設保留。
