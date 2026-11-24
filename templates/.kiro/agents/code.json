@@ -94,5 +94,54 @@
     "revision": 3,
     "fingerprint": "sha256:fa93db34d32445cce4864280ec59bd70f2c4a3997a35997442c7eeb1ca0f3b0c",
     "source": "sha256:f999ce2ada4c0e34b89c03cc3c64b727a65d037cd9999e43c9685539622c9da9"
-  }
+  },
+  "hooks": [
+    {
+      "name": "orca-agent-status-agentSpawn",
+      "trigger": "agentSpawn",
+      "action": {
+        "type": "command",
+        "command": "if [ -n \"${ORCA_PANE_KEY-}${ORCA_AGENT_PANE-}\" ] && [ -f '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -r '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -x '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ]; then /bin/sh '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh'; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi"
+      },
+      "timeout": 10
+    },
+    {
+      "name": "orca-agent-status-userPromptSubmit",
+      "trigger": "userPromptSubmit",
+      "action": {
+        "type": "command",
+        "command": "if [ -n \"${ORCA_PANE_KEY-}${ORCA_AGENT_PANE-}\" ] && [ -f '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -r '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -x '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ]; then /bin/sh '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh'; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi"
+      },
+      "timeout": 10
+    },
+    {
+      "name": "orca-agent-status-preToolUse",
+      "trigger": "preToolUse",
+      "matcher": "*",
+      "action": {
+        "type": "command",
+        "command": "if [ -n \"${ORCA_PANE_KEY-}${ORCA_AGENT_PANE-}\" ] && [ -f '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -r '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -x '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ]; then /bin/sh '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh'; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi"
+      },
+      "timeout": 10
+    },
+    {
+      "name": "orca-agent-status-postToolUse",
+      "trigger": "postToolUse",
+      "matcher": "*",
+      "action": {
+        "type": "command",
+        "command": "if [ -n \"${ORCA_PANE_KEY-}${ORCA_AGENT_PANE-}\" ] && [ -f '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -r '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -x '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ]; then /bin/sh '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh'; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi"
+      },
+      "timeout": 10
+    },
+    {
+      "name": "orca-agent-status-stop",
+      "trigger": "stop",
+      "action": {
+        "type": "command",
+        "command": "if [ -n \"${ORCA_PANE_KEY-}${ORCA_AGENT_PANE-}\" ] && [ -f '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -r '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ] && [ -x '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh' ]; then /bin/sh '/home/ubuntu/.orca/agent-hooks/kiro-hook.sh'; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi"
+      },
+      "timeout": 10
+    }
+  ]
 }
