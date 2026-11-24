@@ -15,6 +15,7 @@
 - 主力工具:Kiro CLI(角色 agent:`plan` / `code` / `aux` / `orchestrator`,流程用 `/pipeline`)。也有 Claude Code。
 - 機器:Ubuntu;個人專案放 `~/proj/my/`。
 - repo 的開與收走 repoManager 的 `/create-repo`、`/close-session`、`/check-repo`。
+- Jira 連線（共用）：憑證在 `~/.config/jira/.env`（不進版控），用 `set -a; source ~/.config/jira/.env; set +a` 載入；各 repo 不另放 Jira 憑證。
 
 ## 目前的專案
 
