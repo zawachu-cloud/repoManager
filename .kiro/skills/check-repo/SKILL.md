@@ -1,6 +1,6 @@
 ---
 name: check-repo
-description: 檢查指定目錄是否符合 repo 標準(必備結構 + .gitignore 有效性 + 機密未外洩 + 文件一致 + 收尾狀態)。當zawa說「檢查某目錄是否合規 / 這個 repo 有沒有照規範」時使用。
+description: 檢查指定目錄是否符合 repo 標準(必備結構 + .gitignore 有效性 + 機密未外洩 + 文件一致 + 收尾狀態)。當 zawa 說「檢查某目錄是否合規 / 這個 repo 有沒有照規範」時使用。
 ---
 
 # 檢查 repo 是否合規(check-repo)
@@ -8,7 +8,7 @@ description: 檢查指定目錄是否符合 repo 標準(必備結構 + .gitignor
 要檢查的目錄(未指定則用目前目錄):$ARGUMENTS
 
 > 規範來源:repoManager `docs/repo-standard.md`(§1 必備結構、§4 檢查項)。
-> 本 skill 只**檢查與回報**,不自動修改;要補齊請走 `/create-repo` 或經zawa同意後動手。
+> 本 skill 只**檢查與回報**,不自動修改;要補齊請走 `/create-repo` 或經 zawa 同意後動手。
 
 ## 檢查項目
 

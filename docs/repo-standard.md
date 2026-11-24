@@ -26,21 +26,21 @@
    - local 新建:`mkdir -p <dir>` → `git init`(預設分支 `main`)。
    - 從 git url clone:`git clone <ssh-url> <dir>`(沿用遠端內容)。
 2. **在 repo 內補齊必備結構**(上表),缺什麼補什麼;已存在的檔不覆蓋(clone 來的尤其小心)。
-3. **寫入 `firstTask.md`**:把zawa口述的「我打算要做什麼任務」填進去,作為新 session 的第 1 份工作。
+3. **寫入 `firstTask.md`**:把 zawa 口述的「我打算要做什麼任務」填進去,作為新 session 的第 1 份工作。
 4. **精簡填寫 `AGENTS.md`**:專案名稱、一句話目標、已知技術棧、指向 `docs/` 與 `firstTask.md`。
-5. **產出後提示**:請zawa `cd <dir>` 後開新 session,新 session 先讀 `AGENTS.md` 與 `firstTask.md`。
+5. **產出後提示**:請 zawa `cd <dir>` 後開新 session,新 session 先讀 `AGENTS.md` 與 `firstTask.md`。
 
 ## 3. 收尾規範(close session)
 
-zawa說「close session / 收工 / 結束這個 session」時,依序:
+zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
-1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向zawa確認**,不略過。
+1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向 zawa 確認**,不略過。
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
 3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
 
 最後執行 `~/proj/my/repoManager/scripts/session-export.sh --current` 匯出本 session 對話(見 `docs/context-system.md` §2a)。
 
-> **commit / push 由 AI 決定、直接執行,不用再問zawa**(zawa已授權);但**破壞性動作**(force push、`reset --hard`、drop/truncate)與**機密外洩風險**仍須先確認。push 前務必確認 `.env` 未被 add。
+> **commit / push 由 AI 決定、直接執行,不用再問 zawa**(zawa 已授權);但**破壞性動作**(force push、`reset --hard`、drop/truncate)與**機密外洩風險**仍須先確認。push 前務必確認 `.env` 未被 add。
 
 ## 4. 合規檢查(check-repo)
 
@@ -80,18 +80,18 @@ zawa說「close session / 收工 / 結束這個 session」時,依序:
 
 ### 5a. 自動化 pipeline(orchestrator + /pipeline)
 
-orchestrator 當總架構師(opus),直接跟zawa討論與規劃;子項目細部規劃視情況派 `plan`(子項目架構師),實作與收尾派 `code` / `aux`。目的是讓zawa能直接跟 orchestrator 對話,同時把吃 token 的細部規劃隔離在 subagent,控制 orchestrator 的 context。
+orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細部規劃視情況派 `plan`(子項目架構師),實作與收尾派 `code` / `aux`。目的是讓 zawa 能直接跟 orchestrator 對話,同時把吃 token 的細部規劃隔離在 subagent,控制 orchestrator 的 context。
 
 - **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
-- **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟zawa確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
-- **大量 log**(單檔約 2000 行以上或多份):orchestrator 不整份讀,先派 `aux` 篩出錯誤段落、時間線、可疑點寫進 `tmp/log-<主題>.md`,只回摘要與證據位置(檔名:行號);orchestrator 依摘要跟zawa討論,需要時只讀特定段落。一般大小的 log 自己讀。
+- **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟 zawa 確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
+- **大量 log**(單檔約 2000 行以上或多份):orchestrator 不整份讀,先派 `aux` 篩出錯誤段落、時間線、可疑點寫進 `tmp/log-<主題>.md`,只回摘要與證據位置(檔名:行號);orchestrator 依摘要跟 zawa 討論,需要時只讀特定段落。一般大小的 log 自己讀。
 - **`pipeline` skill**:`/pipeline <任務>` → 拆解並確認 → 規劃子項目(自己或派 plan,可並行)→ 每個子項目跑 `code`,之後 `test`、`doc` 並行。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → 直接討論,或 `/pipeline <要做的任務>`。
 
-- 有需要zawa決定的選項時(orchestrator 拆解時,或 plan 回報時),會先停下來問;zawa**直接回覆**即可接續,不用再打 `/pipeline`。
+- 有需要 zawa 決定的選項時(orchestrator 拆解時,或 plan 回報時),會先停下來問;zawa**直接回覆**即可接續,不用再打 `/pipeline`。
 - 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的部分,子項目計畫小改自己改,大改重派 plan。
-- 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。plan 回報只給「摘要」與「需要zawa決定」兩段,完整計畫留在檔案裡。
+- 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。plan 回報只給「摘要」與「需要 zawa 決定」兩段,完整計畫留在檔案裡。
 
 **注意**:
 

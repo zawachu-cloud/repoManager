@@ -1,6 +1,6 @@
 ---
 name: close-session
-description: 收尾檢查一個工作 session。依序做三件事:(1) 檢查本 session 未辦事項,(2) 檢查 git 狀態是否乾淨,(3) 檢查本 session 動作與文件是否一致。當zawa說「close session / 收工 / 結束這個 session」時使用。
+description: 收尾檢查一個工作 session。依序做三件事:(1) 檢查本 session 未辦事項,(2) 檢查 git 狀態是否乾淨,(3) 檢查本 session 動作與文件是否一致。當 zawa 說「close session / 收工 / 結束這個 session」時使用。
 ---
 
 # 收尾檢查(close session)
@@ -13,10 +13,10 @@ description: 收尾檢查一個工作 session。依序做三件事:(1) 檢查本
 ## 步驟 1:檢查未辦事項(先做,沒清完不往下)
 
 盤點本 session:
-- 待完成的修改、尚未跑或沒過的測試、未回覆zawa的問題、留著的 TODO / 暫緩項。
+- 待完成的修改、尚未跑或沒過的測試、未回覆 zawa 的問題、留著的 TODO / 暫緩項。
 - `firstTask.md`(若存在)的「完成定義」是否都打勾?未完成就列出來。
 
-**有未辦事項 → 先列出並處理,或向zawa確認要不要留到下次**;確認前不進入步驟 2。
+**有未辦事項 → 先列出並處理,或向 zawa 確認要不要留到下次**;確認前不進入步驟 2。
 
 ## 步驟 2:檢查 git 狀態是否乾淨
 
@@ -32,7 +32,7 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 
 - 這次改了什麼(程式/設定/流程),就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新。
 - 文件描述與現狀不符 → 補正或明確回報落差。
-- 文件結構若明顯可更省 token(重複、該下放到 `docs/`),**提建議讓zawa決定,不擅自大改**。
+- 文件結構若明顯可更省 token(重複、該下放到 `docs/`),**提建議讓 zawa 決定,不擅自大改**。
 
 ## 步驟 3b:更新 USER.md 的「目前的專案」(只動當下 repo 那一行)
 
@@ -45,12 +45,12 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 
 ## 步驟 3c:提醒待確認的記憶變更
 
-`~/proj/my/repoManager/contexts/memory/pending-review.md` 有未打勾(`- [ ]`)的項目時,在收尾報告最後列出數量並提醒zawa。zawa說要套用哪幾項才改 `rules/`,AI 不自己套用。
+`~/proj/my/repoManager/contexts/memory/pending-review.md` 有未打勾(`- [ ]`)的項目時,在收尾報告最後列出數量並提醒 zawa。zawa 說要套用哪幾項才改 `rules/`,AI 不自己套用。
 
 ## 步驟 4:直接 commit / push(AI 決定,不用問)
 
-確認機密未外洩後,**直接** `git add -A && git commit && git push`(zawa已授權,不用再問);commit 訊息用祈使句描述本次變更。
-**破壞性動作**(force push、`reset --hard`、drop/truncate)仍須先向zawa確認。
+確認機密未外洩後,**直接** `git add -A && git commit && git push`(zawa 已授權,不用再問);commit 訊息用祈使句描述本次變更。
+**破壞性動作**(force push、`reset --hard`、drop/truncate)仍須先向 zawa 確認。
 若該 repo 自己的 `AGENTS.md` 另有部署/push 規範(如先 DB 後前端),以該 repo 規範為準。
 
 ## 步驟 5:匯出本 session 對話(最後做,才包含上面的收尾內容)
@@ -65,7 +65,7 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 ## 輸出
 
 給一份收尾報告:
-1. 未辦事項:無 / 已處理 / 待zawa決定(列清單)。
+1. 未辦事項:無 / 已處理 / 待 zawa 決定(列清單)。
 2. git 狀態:乾淨 / 有變更(列清單)+ 機密未外洩確認。
 3. 文件一致性:一致 / 已補正 / 建議事項;USER.md 專案行:未變 / 已更新(寫出新內容)。
 4. commit / push:已提交的 commit 訊息與是否已 push。

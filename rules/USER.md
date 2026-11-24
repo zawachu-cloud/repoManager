@@ -1,4 +1,4 @@
-# USER.md — zawa是誰
+# USER.md — zawa 是誰
 
 > L3 全域規則,每個 session 自動載入。**只寫確定的事**;互動中觀察到新偏好時提議更新(改動前先問)。
 > 例外:「目前的專案」只在 `/close-session`(更新當下 repo 那一行)與每週三回顧(依對話存檔)時由 AI 直接改,平時不動。
@@ -20,7 +20,7 @@
 
 位於 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
 
-- `hr`:小型公司人事薪資、排班打卡、收支記帳系統(Supabase + Cloudflare)。近期:收支記帳改版(只選收入/支出、明細可編輯、支出發票狀態追票、LINE Pay 手續費綁定收入);每月 1、2 號zawa給 LINE Pay 明細,AI 對帳修正手續費。
+- `hr`:小型公司人事薪資、排班打卡、收支記帳系統(Supabase + Cloudflare)。近期:收支記帳改版(只選收入/支出、明細可編輯、支出發票狀態追票、LINE Pay 手續費綁定收入);每月 1、2 號 zawa 給 LINE Pay 明細,AI 對帳修正手續費。
 - `hr_db`:hr 的資料庫實驗場。連 Supabase 查詢、驗證計薪假設、起草 migration 草案。select 預設 prod,其餘寫入預設 dev。
 - `income_ana`:火鍋店營收與人力成本分析(不再做 hr 記帳匯入)。方向:重算 10 月損益、補齊完整 11 月營業額。
 - `line`:<待補>
@@ -41,7 +41,7 @@
 - 不熟的技術(例如 embedding)希望先用白話解釋原理與代價,再做決定。
 - DB schema 變更一律 additive(`add column/table if not exists`),不對線上欄位或資料做 drop、破壞性 alter 或覆蓋;被取代的欄位保留並標 DEPRECATED。
 - 程式碼檔案軟上限約 300 行,到 400 行主動提拆分,硬上限 500 行(barrel、自動產生檔、測試除外),目的是省 token。新功能優先放新模組,不往大檔追加。
-- 回覆 Jira 卡:送出前先給zawa看內容;內容精簡,只寫我們實作的內容與結論,不寫別人的待辦或與實作無關的事。
+- 回覆 Jira 卡:送出前先給 zawa 看內容;內容精簡,只寫我們實作的內容與結論,不寫別人的待辦或與實作無關的事。
 - 開單(專案待辦,非 Jira):寫在該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(repo 已有其他慣例時依 repo),狀態填「待確認」,先 commit 到預設 branch;同時開 branch `issue/<slug>`(slug 與檔名相同,英文小寫、`-` 分隔)並 push。
 
 ## 溝通偏好

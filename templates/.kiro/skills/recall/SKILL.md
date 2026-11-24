@@ -1,6 +1,6 @@
 ---
 name: recall
-description: 語意搜尋zawa過去的 AI 對話存檔(Kiro、Claude Code)與 OBSERVATIONS.md,全部在本機(Ollama)執行。當zawa問「之前怎麼做 / 上次決定什麼 / 以前有沒有處理過 X」,或回答涉及zawa過去的決定、偏好、專案歷史時使用。用法:/recall <要找的事>。
+description: 語意搜尋 zawa 過去的 AI 對話存檔(Kiro、Claude Code)與 OBSERVATIONS.md,全部在本機(Ollama)執行。當 zawa 問「之前怎麼做 / 上次決定什麼 / 以前有沒有處理過 X」,或回答涉及 zawa 過去的決定、偏好、專案歷史時使用。用法:/recall <要找的事>。
 ---
 
 # 回想過去的對話(本地語意搜尋)
