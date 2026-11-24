@@ -18,7 +18,7 @@
   | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
 | `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/{pipeline,recall}/`)。
-- **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道老闆是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
+- **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道zawa是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
 ## 目錄結構
 
@@ -31,11 +31,11 @@ repoManager/
 │   └── context-system.md          # context 系統:三層記憶、資料流、機密處理、分階段計畫
 ├── rules/                         # L3 全域規則(symlink 到 ~/.kiro/steering/,每個 session 自動載入)
 │   ├── SOUL.md                    # AI 行為基調
-│   ├── USER.md                    # 老闆背景與偏好
+│   ├── USER.md                    # zawa背景與偏好
 │   └── COMMUNICATION.md           # 溝通風格
 ├── contexts/memory/
 │   ├── OBSERVATIONS.md            # L1/L2 觀察紀錄(按需 grep,不整份讀)
-│   └── pending-review.md          # reflector 提出、待老闆核准的規則候選
+│   └── pending-review.md          # reflector 提出、待zawa核准的規則候選
 ├── templates/                     # 新 repo 範本(由 create-repo 複製 / 參考)
 │   ├── AGENTS.md
 │   ├── firstTask.md
@@ -67,14 +67,14 @@ repoManager/
 
 ## 慣例(對齊 ~/proj/my/hr)
 
-- **中文回覆**:一律用**繁體中文**回覆老闆。
+- **中文回覆**:一律用**繁體中文**回覆zawa。
 - **語言**:文件與對話用繁體中文;程式碼識別符用英文。
 - **機密**:真實金鑰只放 `.env`(已 gitignore),版控只放 `.env.example`(無真值)。`service_role` 類高權限金鑰嚴禁進版控。
-- **暫存**:草稿/實驗/老闆給 AI 看的資料放 `tmp/`,不進版控;一般搜尋會略過(靠 .gitignore),指定檔案時可讀。`.kiroignore` 不可列 `tmp/`(會連指定讀取一起擋)。
+- **暫存**:草稿/實驗/zawa給 AI 看的資料放 `tmp/`,不進版控;一般搜尋會略過(靠 .gitignore),指定檔案時可讀。`.kiroignore` 不可列 `tmp/`(會連指定讀取一起擋)。
 - **文件分層省 token**:AGENTS.md 只放最關鍵摘要,細節放 `docs/` 或 skill;避免兩處重複。
 - **skill 格式**:每個 skill 是 `.kiro/skills/<name>/SKILL.md`,以 YAML frontmatter(`name` + `description`)開頭,用 `$ARGUMENTS` 接參數。
-- **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問老闆(老闆已授權)。
-- **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向老闆確認。
+- **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問zawa(zawa已授權)。
+- **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向zawa確認。
 - **不擅自大重構**:規範只在 `docs/repo-standard.md` 改一處。
 - **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
 

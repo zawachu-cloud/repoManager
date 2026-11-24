@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 把 repoManager/rules/*.md 以 symlink 掛到 ~/.kiro/steering/,讓所有 repo 的 Kiro session 自動載入 L3 規則。
 # kiro_default 會載入 ~/.kiro/steering/**/*.md;自建 agent 預設也會繼承(除非 chat.disableInheritingDefaultResources=true)。
-# 冪等:已是指向正確位置的 symlink 就略過;同名但不是 symlink 的檔不覆蓋,報錯讓老闆處理。
+# 冪等:已是指向正確位置的 symlink 就略過;同名但不是 symlink 的檔不覆蓋,報錯讓zawa處理。
 # 換機器時:clone repoManager 後執行一次即可。
 set -euo pipefail
 

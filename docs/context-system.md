@@ -1,12 +1,12 @@
 # Context 系統(記憶與規則)
 
-讓 AI 在每個 repo 都知道「老闆是誰、怎麼工作、以前決定過什麼」。架構參考 [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure)(參考版本 `3c25337`,2026-11-12),整合進 repoManager,不另開 repo。
+讓 AI 在每個 repo 都知道「zawa是誰、怎麼工作、以前決定過什麼」。架構參考 [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure)(參考版本 `3c25337`,2026-11-12),整合進 repoManager,不另開 repo。
 
 ## 1. 三層記憶
 
 | 層 | 位置 | 內容 | 載入方式 |
 |----|------|------|----------|
-| **L3 全域規則** | `rules/SOUL.md`、`USER.md`、`COMMUNICATION.md` | AI 行為基調、老闆背景與偏好、溝通風格 | symlink 到 `~/.kiro/steering/`,**每個 session 自動載入**(每行都佔 token,保持精簡) |
+| **L3 全域規則** | `rules/SOUL.md`、`USER.md`、`COMMUNICATION.md` | AI 行為基調、zawa背景與偏好、溝通風格 | symlink 到 `~/.kiro/steering/`,**每個 session 自動載入**(每行都佔 token,保持精簡) |
 | **L1/L2 觀察** | `contexts/memory/OBSERVATIONS.md` | 依日期追加的經驗與決策,標 🔴🟡🟢 | **按需** grep,不整份讀 |
 | **原始對話** | `~/.local/share/ai-session-export/`(不在 repo) | 匯出並去除機密的對話 Markdown | 語意搜尋(第 3 階段) |
 
@@ -35,15 +35,15 @@ semantic-search-skill 建索引(本地 Ollama qwen3-embedding:4b;快取在本機
   │
   ▼
 observer(每日)→ OBSERVATIONS.md 追加 L1
-reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → 老闆核准才合入
+reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → zawa核准才合入
 ```
 
 ### 2b. USER.md「目前的專案」的更新時機
 
-| 時機 | 範圍 | 依據 | 要不要問老闆 |
+| 時機 | 範圍 | 依據 | 要不要問zawa |
 |------|------|------|------|
 | `/close-session` | 只動當下 repo 那一行 | 本 session 做的事 + 該 repo 的 AGENTS.md | 不用,直接改並 commit |
-| 每週三 13:00 回顧(reflector) | 所有專案行 | 本週匯出的對話 Markdown | 專案行直接改;其他段落(偏好、溝通方式)只提候選,老闆核准才改 |
+| 每週三 13:00 回顧(reflector) | 所有專案行 | 本週匯出的對話 Markdown | 專案行直接改;其他段落(偏好、溝通方式)只提候選,zawa核准才改 |
 
 平時 session 不動這段,避免根據片段對話寫錯。
 
@@ -62,7 +62,7 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
   - `/close-session`:**只匯出當下這個 session**。Kiro 會把目前 session id 放在環境變數 `KIRO_SESSION_ID`,對應 `~/.kiro/sessions/cli/$KIRO_SESSION_ID.json`(2026-11-19 已驗證)。
   - cron **每天 12:30**(系統時區 Asia/Taipei):跑全部增量,補上沒下 `/close-session` 的 session,以及收工後又繼續聊的 session。crontab:`30 12 * * *`。
 - WSL 注意:cron 只在 WSL 開著時才跑(目前 cron 有在跑,開機自動啟用)。12:30 電腦沒開就略過那天,下次執行會補上,不會掉資料。
-- **子 session 用 `parent_session_id` 判斷**(只有 30 個有,父 session 都存在)。`session_created_reason` 不可靠:老闆直接開的主對話也標 `subagent`。
+- **子 session 用 `parent_session_id` 判斷**(只有 30 個有,父 session 都存在)。`session_created_reason` 不可靠:zawa直接開的主對話也標 `subagent`。
 - 對帳(2026-11-19 首次全量):727 個 `.json` = 470 匯出 + 30 子 session + 227 空對話,無遺漏。Claude Code 8 個 transcript 中 3 個有對話,全數匯出。
 - 增量判斷實際用 `.json` 與 `.jsonl` 的 mtime + 大小(對話先寫進 `.jsonl`,`updated_at` 較晚才更新)。
 - 要全部重來用 `--full`。
@@ -71,7 +71,7 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 
 | 日期 | 決策 | 理由 / 替代方案 |
 |------|------|------|
-| 2026-11-18 | 整合進 repoManager,不另開 `~/proj/my/context` | repoManager 是 private;內容都是「AI 怎麼跟老闆工作」,和既有標準、`~/.kiro/` 備份同類;只需維護、備份一個 repo。代價:記憶會隨 repo 走,**repoManager 不可轉 public**。 |
+| 2026-11-18 | 整合進 repoManager,不另開 `~/proj/my/context` | repoManager 是 private;內容都是「AI 怎麼跟zawa工作」,和既有標準、`~/.kiro/` 備份同類;只需維護、備份一個 repo。代價:記憶會隨 repo 走,**repoManager 不可轉 public**。 |
 | 2026-11-18 | ai_session_export、semantic-search-skill 當外部工具安裝 | 它們是獨立 repo,有自己的測試與更新;Kiro adapter 寫在 ai_session_export 的 fork。 |
 | 2026-11-18 | 不搬 upstream 的 `rules/axioms/`(44 份)、`rules/skills/`(42 份)、`WORKSPACE.md` | upstream 說明那些是原作者的累積,只能參考;我們的 skill 已在 `.kiro/skills/`。 |
 | 2026-11-18 | L3 用 `~/.kiro/steering/` symlink 載入 | default 與自建 agent 都吃得到,不必改每個 agent 的 `resources`。 |
@@ -146,7 +146,7 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 | 元件 | 內容 |
 |------|------|
 | `scripts/heartbeat.py observe` | 每天 12:30(接在 `session-export.sh` 最後)。挑出大小有變的存檔(新 session 或續聊),一次最多 40 個,交給 Kiro 寫 🔴🟡🟢,追加到 `OBSERVATIONS.md` 並 commit。失敗不推進狀態,下次重試同一批。 |
-| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md **直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 規則候選與記憶合併建議寫進 `contexts/memory/pending-review.md`,**老闆核准才套用**。 |
+| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md **直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 規則候選與記憶合併建議寫進 `contexts/memory/pending-review.md`,**zawa核准才套用**。 |
 | Kiro agent `heartbeat` | `~/.kiro/agents/heartbeat.json`(sonnet-5.5),只有 read/grep/glob,**不能寫檔或執行指令**(已實測)。結果印在標記之間,由腳本驗證格式 → 遮罩 → gitleaks → 寫檔 → 只 commit 碰到的檔。 |
 | 不回灌 | heartbeat 的 Kiro session 在 `~/.local/share/ai-heartbeat/` 執行,匯出時用 `--kiro-exclude-cwd` 排除,不會變成下一輪的觀察來源。 |
 | 狀態 / log | `~/.local/share/ai-heartbeat/state.json`(各存檔上次觀察時的大小)、`last-obs.log`、`last-reflect.log`、`cron.log`。 |
@@ -166,6 +166,6 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 
 ## 6. 未決事項
 
-- `USER.md`「目前的專案」的 `line`、`modelRouting` 依 §2b 由 AI 逐步補(老闆決定不填背景等其他欄位)。
-- `age.txt` 的異地保存方式(老闆決定)。
+- `USER.md`「目前的專案」的 `line`、`modelRouting` 依 §2b 由 AI 逐步補(zawa決定不填背景等其他欄位)。
+- `age.txt` 的異地保存方式(zawa決定)。
 - 換電腦前要先跑一次匯出,確認最後幾天的對話進了存檔(`~/.kiro/sessions/` 不會跟著走)。

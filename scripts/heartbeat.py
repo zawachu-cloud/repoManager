@@ -133,7 +133,7 @@ def clean_lines(raw: str) -> list[str]:
 
 OBSERVE_PROMPT = """任務:L1 每日觀察。基準日期 {today}。
 
-下面是自上次觀察後新增或更新的 AI 對話存檔(Markdown;老闆和 AI 的對話,機密已遮成 [REDACTED])。
+下面是自上次觀察後新增或更新的 AI 對話存檔(Markdown;zawa和 AI 的對話,機密已遮成 [REDACTED])。
 請自己用 read / grep 讀內容。檔案可能很長,先看開頭與 `## User` 段落,再挑重點讀,不必逐字讀完。
 
 {files}
@@ -148,8 +148,8 @@ OBSERVE_PROMPT = """任務:L1 每日觀察。基準日期 {today}。
 規則:
 - [分類] 用 2~6 個字,例如 [決策]、[約束]、[發現]、[專案狀態]、[偏好]。
 - 描述要具體,提到專案時寫 repo 名(例如 hr、psapi-dotnet),一行 200 字以內。
-- 記「做了什麼決定、為什麼、學到什麼、老闆的偏好」,不記操作細節。
-- 老闆表現出的新偏好或不喜歡的做法,用 🔴 或 🟡 + [偏好] 記下。
+- 記「做了什麼決定、為什麼、學到什麼、zawa的偏好」,不記操作細節。
+- zawa表現出的新偏好或不喜歡的做法,用 🔴 或 🟡 + [偏好] 記下。
 - 絕不寫金鑰、密碼、token、IP、個資(員工姓名、身分證、薪資數字、帳號)。
 - 總共最多 15 行;沒有值得記的就只輸出 NONE。
 
@@ -224,7 +224,7 @@ REFLECT_PROMPT = """任務:L2 每週回顧。基準日期 {today}。
 
 請讀:
 1. 記憶檔 {obs}(L1/L2 觀察,依 Date 分段)。
-2. 老闆的使用者檔 {user}(每個 session 都會載入)。
+2. zawa的使用者檔 {user}(每個 session 都會載入)。
 3. 過去 7 天的對話存檔(需要時用 read / grep 看內容):
 {files}
 4. 各專案的 AGENTS.md:{projects_root}/<repo>/AGENTS.md(需要時讀)。
@@ -358,7 +358,7 @@ def cmd_reflect(args: argparse.Namespace) -> int:
         if gitleaks_clean(section):
             if not args.dry_run:
                 if not PENDING.exists():
-                    PENDING.write_text("# 待老闆確認的記憶變更\n\n> 由每週三 reflector 產生。老闆同意哪幾項,就請 AI 套用到 `rules/` 或 `OBSERVATIONS.md`,"
+                    PENDING.write_text("# 待zawa確認的記憶變更\n\n> 由每週三 reflector 產生。zawa同意哪幾項,就請 AI 套用到 `rules/` 或 `OBSERVATIONS.md`,"
                                        "然後把該項打勾或刪除。沒處理的會一直留著。\n", encoding="utf-8")
                 with PENDING.open("a", encoding="utf-8") as handle:
                     handle.write(section)
