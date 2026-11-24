@@ -78,3 +78,10 @@ Date: 2026-11-23
 🟢 Low: [發現] 備份到 private_session_data 的檔案以雜湊命名,對照表加密另存,GitHub 上看不到對話標題。gitleaks 會把本機備份索引(sha256)誤判成金鑰,要在 `.gitleaks.toml` 排除,否則 cron 備份被擋。
 🟢 Low: [決策] 要從存檔移除某個 session 得做三件事:刪 Markdown 並移出索引、加進匯出排除清單(否則 cron 會重匯)、加密備份的 git 歷史仍留舊版。zawa 要求刪記憶時,只刪 OBSERVATIONS 等記憶,對話存檔預設保留。
 🟡 Medium: [決策] .kiroignore 會擋指定讀取,.gitignore 只讓搜尋略過;tmp/ 只放 .gitignore。起因:hr 的 .kiroignore 擋 tmp/,pipeline 讀不回計畫檔與 zawa 放的資料。
+
+Date: 2026-11-24
+
+🟡 Medium: [專案狀態] zawa 從 2026-11-24 開始學用 orca(透過 SSH 連進 WSL),原本 psapi-dotnet 的 API 開發都在 ~/proj/api/psapi-dotnet 的 main 上直接做,現在改在 ~/orca/workspaces/<repo>/<worktree> 底下工作,例如 apiServer/killifish。
+🟡 Medium: [發現] orca 的 workspace 目錄是 workspaces/<專案>/<worktree 名>,和 zawa 原本預期的 workspaces/<專案> 不同。zawa 也發現 orca 的 .env 管理方式和他以往不同,之後教他 orca 的流程時要特別說明這兩點。
+🟢 Low: [發現] orca 會自動呼叫 Claude Code 產生 git branch 名稱。在 killifish 這幾個 session 中 Claude Code 未登入(Not logged in),所以 AI 沒有回答,只留下 prompt 存檔。要用這項功能得先在 WSL 裡 /login。
+🟢 Low: [專案狀態] zawa 在 orca 下手動建了 psapi-dotnet 的 git 目錄(~/orca/workspaces/api/git-gitlab.com-bu00-rd-api-psapi-dotnet.git),覺得結果怪怪的,請 AI 檢查。這可能是 orca 對 repo 的 clone 或 bare 結構,內容待後續確認。
