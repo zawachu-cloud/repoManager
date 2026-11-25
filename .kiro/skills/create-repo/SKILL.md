@@ -47,6 +47,7 @@ cd <目錄>
 
 - `AGENTS.md` ← 複製 `templates/AGENTS.md` 後,填入專案名稱 / 一句話目標 / 已知技術棧。
 - `docs/` ← 建目錄,放入 `templates/docs/README.md`(完整資訊之後往這裡擺)。
+- `docs/glossary.md` ← 複製 `templates/docs/glossary.md`,把 `<repo 名稱>` 換成實際 repo 名稱;已存在不覆蓋。
 - `firstTask.md` ← 複製 `templates/firstTask.md`,把 zawa 口述的任務填進「任務」段(見步驟 5)。
 - `.gitignore` ← 複製 `templates/gitignore` 為 `.gitignore`(至少要忽略 `.env`、`.env.*`、`tmp/`,保留 `!.env.example`)。
 - `.env.example` ← 複製 `templates/env.example` 為 `.env.example`。
@@ -62,6 +63,7 @@ cp "$TPL/env.example"     <目錄>/.env.example
 cp "$TPL/firstTask.md"    <目錄>/firstTask.md
 mkdir -p <目錄>/docs <目錄>/tmp
 cp "$TPL/docs/README.md"  <目錄>/docs/README.md
+[ -e <目錄>/docs/glossary.md ] || sed "s/<repo 名稱>/<repo 名稱實值>/" "$TPL/docs/glossary.md" > <目錄>/docs/glossary.md
 touch <目錄>/.env <目錄>/tmp/.gitkeep
 ```
 > clone 來的 repo 若已有同名檔,**保留原檔**,只補缺少的。

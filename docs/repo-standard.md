@@ -11,6 +11,7 @@
 |------|------|:------:|------|
 | `AGENTS.md` | 檔案 | ✅ | 本 repo 的**精簡**資訊:總覽、技術棧、慣例、指令、指向 `docs/` 找完整資訊。給 AI/新成員開工前先讀。 |
 | `docs/` | 目錄 | ✅ | **完整**資訊所在:feature / issue / 待辦 / 設計 / 決策紀錄。AGENTS.md 只摘要,細節一律放這裡。 |
+| `docs/glossary.md` | 檔案 | ✅ | 業務名詞表。格式與寫入規則見檔案開頭,範本 `templates/docs/glossary.md`;內容可以先放空(只有標題與表頭)。 |
 | `firstTask.md` | 檔案 | ✅(暫存) | 第 1 份工作的說明。切到此 repo 開新 session 時,第一件事就是讀它。完成後可刪或歸檔到 `docs/`。 |
 | `.env` | 檔案 | ❌ | 機密資訊(金鑰/密碼/連線字串)。**絕不進版控**。 |
 | `.env.example` | 檔案 | ✅ | `.env` 的範本(只有 key、無真值),讓他人知道需要哪些變數。 |
@@ -36,7 +37,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向 zawa 確認**,不略過。
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
-3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
+3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。本 session 出現新業務名詞或改名,對照 `docs/glossary.md` 是否已更新。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
 
 最後執行 `~/proj/my/repoManager/scripts/session-export.sh --current` 匯出本 session 對話(見 `docs/context-system.md` §2a)。
 
@@ -46,7 +47,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 對指定目錄,逐項核對:
 
-- **結構**:§1 必備項目是否齊全(`AGENTS.md`、`docs/`、`.env.example`、`.gitignore`、`.git/`;`firstTask.md`/`tmp/` 視階段而定)。
+- **結構**:§1 必備項目是否齊全(`AGENTS.md`、`docs/`、`docs/glossary.md`(缺少為 ❌)、`.env.example`、`.gitignore`、`.git/`;`firstTask.md`/`tmp/` 視階段而定)。
 - **.gitignore 有效性**:`.env`、`.env.*`、`tmp/` 確實被忽略;`.env.example` 未被忽略。
 - **.kiroignore(若存在)**:未列 `tmp/`(會擋指定讀取)。
 - **機密外洩**:`git ls-files` 不應出現 `.env`、`.env.*`(除 `.env.example`)、`tmp/` 內容。
@@ -63,11 +64,11 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 |-------|-------|------|--------|
 | `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;pipeline 中當子項目架構師(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
-| `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作(pipeline 的 `doc` 階段改用 sonnet,見 §5a) | `ctrl+shift+u` |
+| `aux` | `claude-haiku-5.5` | 分析 log、寫文件等輔助工作。pipeline 不派它寫測試(測試由 `code` 先寫);`doc` 階段改用 sonnet,見 §5a | `ctrl+shift+u` |
 
 **存放與同步**:
 
-- **全域** `~/.kiro/agents/{plan,code,aux,orchestrator}.json`、`~/.kiro/skills/pipeline/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
+- **全域** `~/.kiro/agents/{plan,code,aux,orchestrator}.json`、`~/.kiro/skills/{pipeline,recall,improve-codebase-architecture}/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
 - **備份** `templates/.kiro/` → `~/.kiro/` 不在版控,改完執行 `scripts/sync-kiro.sh` 複製回來並 commit。換機器時反向複製到 `~/.kiro/` 即可還原。
 - **本地覆蓋** → 只有某 repo 需要跟全域不同(例如換 model)時,才在該 repo 放同名 `.kiro/agents/<name>.json`。本地同名檔會覆蓋全域,之後改全域不會影響它,沒必要就不要放。
 
@@ -85,7 +86,7 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 - **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
 - **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟 zawa 確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
 - **大量 log**(單檔約 2000 行以上或多份):orchestrator 不整份讀,先派 `aux` 篩出錯誤段落、時間線、可疑點寫進 `tmp/log-<主題>.md`,只回摘要與證據位置(檔名:行號);orchestrator 依摘要跟 zawa 討論,需要時只讀特定段落。一般大小的 log 自己讀。
-- **`pipeline` skill**:`/pipeline <任務>` → 拆解並確認 → 規劃子項目(自己或派 plan,可並行)→ 每個子項目跑 `code`,之後 `test`、`doc` 並行。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 釐清需求並拆解(垂直切、判斷規模)→ 規劃子項目(自己或派 plan,可並行,依 `plan-template.md`)→ `code` 以 TDD 實作(先寫測試,規則在 `tdd.md`)→ 中型以上派 `plan` 審查(只讀不改,寫 `tmp/review-<子項目>.md`)→ `doc`。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。流程細節見 SKILL.md,部分作法改寫自 mattpocock/skills(MIT,見 `NOTICE.md`)。在 `~/.kiro/skills/pipeline/`,備份在 `templates/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → 直接討論,或 `/pipeline <要做的任務>`。
 

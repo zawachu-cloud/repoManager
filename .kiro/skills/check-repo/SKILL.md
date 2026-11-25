@@ -21,6 +21,7 @@ for p in AGENTS.md .gitignore .env.example .git; do
   [ -e "$p" ] && echo "✅ $p" || echo "❌ 缺 $p"
 done
 { [ -d doc ] || [ -d docs ]; } && echo "✅ docs/(或 doc/)" || echo "❌ 缺 docs/"
+{ [ -f docs/glossary.md ] || [ -f doc/glossary.md ]; } && echo "✅ docs/glossary.md" || echo "❌ 缺 docs/glossary.md"
 [ -d tmp ]        && echo "✅ tmp/"        || echo "⚠️ 無 tmp/(視階段)"
 [ -f firstTask.md ] && echo "✅ firstTask.md" || echo "⚠️ 無 firstTask.md(可能已完成歸檔)"
 ```

@@ -31,6 +31,7 @@ git ls-files --error-unmatch .env 2>/dev/null && echo "⚠️ .env 被追蹤了!
 ## 步驟 3:檢查本 session 動作與文件是否一致
 
 - 這次改了什麼(程式/設定/流程),就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新。
+- 出現新業務名詞或改名,對照 `docs/glossary.md` 是否已更新。
 - 文件描述與現狀不符 → 補正或明確回報落差。
 - 文件結構若明顯可更省 token(重複、該下放到 `docs/`),**提建議讓 zawa 決定,不擅自大改**。
 

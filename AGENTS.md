@@ -16,8 +16,9 @@
   | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
   | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
-| `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
-- **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/{pipeline,recall}/`)。
+| `/pipeline` | orchestrator(總架構師)釐清需求並拆解,視情況派 plan 規劃,code 以 TDD 實作,中型以上派 plan 審查,aux 補文件,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+| `/improve-codebase-architecture` | orchestrator 派 plan 掃描 codebase,找出可加深或整併的模組並產出 Markdown 報告,zawa 挑一項後追問到決策清楚,再交給 `/pipeline` 實作。只在明確要求時用,不改程式碼。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+- **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/{pipeline,recall,improve-codebase-architecture}/`)。
 - **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道 zawa 是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
 ## 目錄結構
@@ -28,6 +29,7 @@ repoManager/
 ├── README.md                      # 入口說明
 ├── docs/
 │   ├── repo-standard.md           # repo 必備結構 + close session 規範(單一真實來源)
+│   ├── glossary.md                # 本 repo 的名詞表(格式見檔案開頭)
 │   └── context-system.md          # context 系統:三層記憶、資料流、機密處理、分階段計畫
 ├── rules/                         # L3 全域規則(symlink 到 ~/.kiro/steering/,每個 session 自動載入)
 │   ├── SOUL.md                    # AI 行為基調
@@ -41,9 +43,9 @@ repoManager/
 │   ├── firstTask.md
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
-│   ├── docs/README.md
+│   ├── docs/{README,glossary}.md  # glossary 為名詞表範本
 │   ├── .kiro/agents/              # agent 備份(plan/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
-│   └── .kiro/skills/{pipeline,recall}/  # 全域 skill 備份,來源是 ~/.kiro/
+│   └── .kiro/skills/{pipeline,recall,improve-codebase-architecture}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
 │   ├── session-export.sh          # 對話匯出:cron 每天 12:30 全部增量+加密備份;--current 給 /close-session
@@ -62,7 +64,7 @@ repoManager/
 
 ## repo 標準(摘要)
 
-一個 repo 完成後根目錄應有:`AGENTS.md`(精簡資訊)、`docs/`(完整資訊)、`firstTask.md`(第 1 份工作,暫存)、`.env`(機密,不進版控)、`.env.example`、`tmp/`(暫存,不進版控)、`.gitignore`、`.git/`。
+一個 repo 完成後根目錄應有:`AGENTS.md`(精簡資訊)、`docs/`(完整資訊)、`docs/glossary.md`(名詞表,可先放空)、`firstTask.md`(第 1 份工作,暫存)、`.env`(機密,不進版控)、`.env.example`、`tmp/`(暫存,不進版控)、`.gitignore`、`.git/`。
 **完整定義與理由見 `docs/repo-standard.md`**,勿在此處重複細節(省 token、避免兩處不同步)。
 
 ## 慣例(對齊 ~/proj/my/hr)
@@ -76,7 +78,7 @@ repoManager/
 - **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問 zawa(zawa 已授權)。
 - **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向 zawa 確認。
 - **不擅自大重構**:規範只在 `docs/repo-standard.md` 改一處。
-- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
+- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` 與 `improve-codebase-architecture` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
 
 ## 給 AI 代理的工作準則
 
