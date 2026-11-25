@@ -25,7 +25,7 @@ zawa 要做的任務:$ARGUMENTS
 - `doc` stage 必須在 stage 參數帶 `"model": "claude-sonnet-5.5"`。
 - 都用 **subagent** 工具,`mode=blocking`。
 - 只有一個子項目時,stage 名稱可省略 `-<子項目>`。
-- 模板與規則在本 skill 同目錄:`plan-template.md`(計畫檔格式)、`tdd.md`(code 的測試規則)。
+- 模板與規則在本 skill 同目錄:`plan-template.md`(計畫檔格式)、`tdd.md`(code 的測試規則)。派 subagent 時一律寫絕對路徑 `~/.kiro/skills/pipeline/plan-template.md`、`~/.kiro/skills/pipeline/tdd.md`(若 repo 有本地覆蓋的 `.kiro/skills/pipeline/`,改用該路徑)。
 
 ## 流程
 
