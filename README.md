@@ -9,8 +9,8 @@
   - `/create-repo <目錄> <local 或 git url> <第 1 份工作>` — 建立新 repo 並補齊必備結構。
   - `/close-session` — 收尾檢查:未辦事項 → git 乾淨 → 動作與文件一致。
   - `/check-repo <目錄>` — 檢查指定目錄是否符合 repo 標準。
-- **`templates/`** — 新 repo 範本(AGENTS.md、firstTask.md、gitignore、env.example、docs/README),以及 `templates/.kiro/`:全域 `~/.kiro/` 角色 agent 與 pipeline skill 的版控備份。
-- **`scripts/sync-kiro.sh`** — 把 `~/.kiro/` 的 agent 與 pipeline skill 同步回 `templates/.kiro/`。
+- **`templates/`** — 新 repo 範本(AGENTS.md、firstTask.md、gitignore、env.example、docs/README),以及 `templates/.kiro/`:全域 `~/.kiro/` 角色 agent 與全域 skill(pipeline、recall、improve-codebase-architecture)的版控備份。
+- **`scripts/sync-kiro.sh`** — 把 `~/.kiro/` 的 agent 與全域 skill 同步回 `templates/.kiro/`。
 - **`rules/`、`contexts/memory/`** — context 系統(參考 grapeot/context-infrastructure):全域規則與觀察紀錄。`scripts/link-rules.sh` 把 `rules/*.md` 掛到 `~/.kiro/steering/`,所有 repo 自動載入。見 `docs/context-system.md`。
 
 ## 換機器

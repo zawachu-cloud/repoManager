@@ -89,3 +89,5 @@ Date: 2026-11-24
 Date: 2026-11-25
 
 🟡 Medium: [決策] /pipeline 改成 v2,吸收 mattpocock/skills 的 spec → TDD → review 作法:保留 orchestrator 分派、model routing、tmp/ 計畫檔,不搬 issue tracker、worktree、整合 branch、PR。測試改由 code 先寫(TDD),移除 aux 的 test 階段;中型以上任務新增 plan(opus)審查階段,只讀不改;測試的驗證入口由 orchestrator / plan 自己決定,有疑慮才用白話問 zawa。計畫模板與 TDD 規則放 `~/.kiro/skills/pipeline/`(plan-template.md、tdd.md),NOTICE.md 附 MIT 授權。sync-kiro.sh 改成同步整個 skill 目錄。
+
+🟡 Medium: [決策] 採用 improve-codebase-architecture 改寫版(來源 mattpocock/skills,MIT),放全域 `~/.kiro/skills/improve-codebase-architecture/`:orchestrator 派 plan 掃描並寫 Markdown 報告到 repo 的 `tmp/`,zawa 挑一項後追問、必要時 design it twice,決策清楚再交給 /pipeline 實作,本身不改程式碼。不建 GLOSSARY.md 與 docs/adr/,用語與否決理由記進該 repo 的 docs/。同批評估過 diagnosing-bugs,暫不做,先驗證新 pipeline。
