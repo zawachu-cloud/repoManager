@@ -11,6 +11,7 @@
 |------|------|:------:|------|
 | `AGENTS.md` | 檔案 | ✅ | 本 repo 的**精簡**資訊:總覽、技術棧、慣例、指令、指向 `docs/` 找完整資訊。給 AI/新成員開工前先讀。 |
 | `docs/` | 目錄 | ✅ | **完整**資訊所在:feature / issue / 待辦 / 設計 / 決策紀錄。AGENTS.md 只摘要,細節一律放這裡。 |
+| `docs/glossary.md` | 檔案 | ✅ | 業務名詞表。格式與寫入規則見檔案開頭,範本 `templates/docs/glossary.md`;內容可以先放空(只有標題與表頭)。 |
 | `firstTask.md` | 檔案 | ✅(暫存) | 第 1 份工作的說明。切到此 repo 開新 session 時,第一件事就是讀它。完成後可刪或歸檔到 `docs/`。 |
 | `.env` | 檔案 | ❌ | 機密資訊(金鑰/密碼/連線字串)。**絕不進版控**。 |
 | `.env.example` | 檔案 | ✅ | `.env` 的範本(只有 key、無真值),讓他人知道需要哪些變數。 |
@@ -36,7 +37,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向 zawa 確認**,不略過。
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
-3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
+3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。本 session 出現新業務名詞或改名,對照 `docs/glossary.md` 是否已更新。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
 
 最後執行 `~/proj/my/repoManager/scripts/session-export.sh --current` 匯出本 session 對話(見 `docs/context-system.md` §2a)。
 
@@ -46,7 +47,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 對指定目錄,逐項核對:
 
-- **結構**:§1 必備項目是否齊全(`AGENTS.md`、`docs/`、`.env.example`、`.gitignore`、`.git/`;`firstTask.md`/`tmp/` 視階段而定)。
+- **結構**:§1 必備項目是否齊全(`AGENTS.md`、`docs/`、`docs/glossary.md`(缺少為 ❌)、`.env.example`、`.gitignore`、`.git/`;`firstTask.md`/`tmp/` 視階段而定)。
 - **.gitignore 有效性**:`.env`、`.env.*`、`tmp/` 確實被忽略;`.env.example` 未被忽略。
 - **.kiroignore(若存在)**:未列 `tmp/`(會擋指定讀取)。
 - **機密外洩**:`git ls-files` 不應出現 `.env`、`.env.*`(除 `.env.example`)、`tmp/` 內容。

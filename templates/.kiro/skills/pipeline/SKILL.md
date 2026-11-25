@@ -34,6 +34,7 @@ zawa 要做的任務:$ARGUMENTS
 **釐清需求**:追問到需求清楚。
 
 - 能從程式碼、文件、記憶查到的事自己查,不問 zawa。
+- 先讀該 repo 的 `docs/glossary.md`。需求用語跟表不一致時,列入問題。repo 沒有這個檔,從 `~/proj/my/repoManager/templates/docs/glossary.md` 建一份(替換 repo 名稱)。
 - 要問的事每輪集中編號列出,最多約 5 題。每題附你的建議答案,並把問題寫成「回答 yes 就採用建議」。
 - 一題的答案取決於另一題時,放到下一輪問。
 
@@ -84,6 +85,7 @@ prompt 要帶計畫檔路徑、`tdd.md` 路徑、zawa 的決定。規則摘要(�
 - 驗收條件是否都達成且有測試。
 - 測試是否綁實作或同義反覆(期望值照程式算法重算)。
 - mock 是否只在外部邊界。
+- 命名是否跟 `docs/glossary.md` 一致。
 - 檔案行數、機密與輸入驗證。
 - 可重構的地方。
 
@@ -92,6 +94,8 @@ prompt 要帶計畫檔路徑、`tdd.md` 路徑、zawa 的決定。規則摘要(�
 有必修時,你帶 review 檔路徑重派 `code-<子項目>-fix`。修完不必再審,除非改動很大。建議項目整合進最後的回報給 zawa。小型任務跳過本步。
 
 ### 第 5 步:文件(aux,sonnet)
+
+這次出現的新詞,依 `docs/glossary.md` 開頭規則補進去(定義由 zawa 講明或確認的直接寫,其餘標「(待確認)」)。
 
 小型任務的 `doc-<子項目>` `depends_on` code。中型以上 `depends_on` review(有 fix 時再加 fix)。
 

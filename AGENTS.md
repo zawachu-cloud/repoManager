@@ -29,6 +29,7 @@ repoManager/
 ├── README.md                      # 入口說明
 ├── docs/
 │   ├── repo-standard.md           # repo 必備結構 + close session 規範(單一真實來源)
+│   ├── glossary.md                # 本 repo 的名詞表(格式見檔案開頭)
 │   └── context-system.md          # context 系統:三層記憶、資料流、機密處理、分階段計畫
 ├── rules/                         # L3 全域規則(symlink 到 ~/.kiro/steering/,每個 session 自動載入)
 │   ├── SOUL.md                    # AI 行為基調
@@ -42,7 +43,7 @@ repoManager/
 │   ├── firstTask.md
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
-│   ├── docs/README.md
+│   ├── docs/{README,glossary}.md  # glossary 為名詞表範本
 │   ├── .kiro/agents/              # agent 備份(plan/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
 │   └── .kiro/skills/{pipeline,recall,improve-codebase-architecture}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
@@ -63,7 +64,7 @@ repoManager/
 
 ## repo 標準(摘要)
 
-一個 repo 完成後根目錄應有:`AGENTS.md`(精簡資訊)、`docs/`(完整資訊)、`firstTask.md`(第 1 份工作,暫存)、`.env`(機密,不進版控)、`.env.example`、`tmp/`(暫存,不進版控)、`.gitignore`、`.git/`。
+一個 repo 完成後根目錄應有:`AGENTS.md`(精簡資訊)、`docs/`(完整資訊)、`docs/glossary.md`(名詞表,可先放空)、`firstTask.md`(第 1 份工作,暫存)、`.env`(機密,不進版控)、`.env.example`、`tmp/`(暫存,不進版控)、`.gitignore`、`.git/`。
 **完整定義與理由見 `docs/repo-standard.md`**,勿在此處重複細節(省 token、避免兩處不同步)。
 
 ## 慣例(對齊 ~/proj/my/hr)

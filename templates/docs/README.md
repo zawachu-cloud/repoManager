@@ -9,6 +9,7 @@
 
 建議檔案(視需要建立):
 
+- `glossary.md` — 業務名詞表(格式與寫入規則見檔案開頭)
 - `requirements.md` — 需求
 - `architecture.md` — 架構與資料模型
 - `roadmap.md` — 階段規劃與待辦
