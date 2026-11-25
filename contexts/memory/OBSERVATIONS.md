@@ -95,3 +95,5 @@ Date: 2026-11-25
 🟡 Medium: [決策] 每個 repo 必備 `docs/glossary.md`(名詞表),取代先前「不建 GLOSSARY.md」的做法。格式比 mattpocock 多「程式名稱」欄,內容可先放空。寫入規則:zawa 講明或確認的直接寫,AI 從程式推出的標「(待確認)」,用語衝突時當場問 zawa 並記進「曾經混用」。範本在 `templates/docs/glossary.md`,pipeline、improve-codebase-architecture、create-repo、check-repo、close-session 都依它運作。
 
 🟡 Medium: [決策] close session 新增第 4 步「清理暫存」(`docs/repo-standard.md` §3):本 session 由 AI 建立、工作已完成的 `tmp/` 檔(plan-*、review-*、arch-*、log-*、下載的參考原文、.bak、下載暫存)直接刪;zawa 放的資料、舊 session 留下或來源不明、工作未完成的檔先問。只刪 `tmp/` 內的檔,逐檔刪,不用 `rm -rf`,空目錄用 `rmdir`,`tmp/` 本身保留。理由:zawa 已授權這類刪除,範圍以外仍依「破壞性動作先確認」。
+
+🟡 Medium: [專案狀態/決策] Kiro 新版 session(從 orca/ACP 開的)存在 `~/.kiro/sessions/<sha256(工作目錄路徑) 前 16 碼>/sess_<UUID>/`,檔案為 `session.json` + `messages.jsonl`,與舊格式 `~/.kiro/sessions/cli/<id>.json` + `.jsonl` 並存。舊的匯出只掃 cli/,因此 `/close-session` 找不到新格式 session,回報 `session metadata not found`;每日 cron 也漏匯新格式(約 40 個 11/19 起的 session)。修正:ai_session_export commit d0387ba 新增 `sources/kiro_workspace.py` 與 `--kiro-workspace-root`(預設 ~/.kiro/sessions),兩種格式都掃、輸出到同一個 kiro/ 資料夾;新格式只匯出 user 與 assistant 文字,子代理不匯出。新格式的 project_directory 是 orca 工作目錄,zawa 同意照實記錄。文件已更新於 docs/context-system.md §2a。

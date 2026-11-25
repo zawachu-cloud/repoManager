@@ -22,7 +22,7 @@
 ## 2. 資料流(完整版)
 
 ```
-~/.kiro/sessions/cli/ + ~/.claude/projects/
+~/.kiro/sessions/(cli/ 與 <hash>/ 兩種格式並存,見 §2a)+ ~/.claude/projects/
   │  ai_session_export(+ 自寫 Kiro adapter)
   │  ├─ 增量:只匯出新的或有更新的 session(見 §2a)
   │  ├─ 遮罩金鑰 / 個資
@@ -49,6 +49,18 @@ reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → zawa 核准才合入
 
 ### 2a. 怎麼知道哪些 session 已匯出
 
+**Kiro session 有兩種格式,兩種都掃**(`sources/kiro_workspace.py` 處理新格式,`--kiro-workspace-root` 指定根目錄,預設 `~/.kiro/sessions`):
+
+| 格式 | 位置 | 檔案 | 來源 |
+|------|------|------|------|
+| 舊 | `~/.kiro/sessions/cli/` | `<id>.json` + `<id>.jsonl` | Kiro CLI 舊版 |
+| 新 | `~/.kiro/sessions/<hash>/sess_<UUID>/` | `session.json` + `messages.jsonl` | orca / ACP 開的 session |
+
+- 新格式的 `<hash>` 是工作目錄路徑 sha256 的前 16 碼。`project_directory` 會是 orca 工作目錄(例如 `~/orca/workspaces/repoManager/matt`),照實記錄,不改寫成 repo 路徑。
+- 新格式只匯出 user 與 assistant(Say)文字,白名單制。子代理在 `sub-executions/`,不匯出。
+- 兩種格式輸出到同一個 `kiro/` 資料夾。`--session-id` 帶不帶 `sess_` 前綴都可以。
+- 新格式支援由 ai_session_export commit d0387ba 加入。
+
 ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`)做增量匯出。Kiro adapter 照同一機制:
 
 | 情況 | 判斷 | 動作 |
@@ -59,12 +71,12 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 
 - 每份 Markdown 的 frontmatter 有 `session_id`,可反查。
 - **兩個觸發點,分工不同**:
-  - `/close-session`:**只匯出當下這個 session**。Kiro 會把目前 session id 放在環境變數 `KIRO_SESSION_ID`,對應 `~/.kiro/sessions/cli/$KIRO_SESSION_ID.json`(2026-11-19 已驗證)。
+  - `/close-session`:**只匯出當下這個 session**。Kiro 會把目前 session id 放在環境變數 `KIRO_SESSION_ID`,兩種格式的位置見上方表格(2026-11-19 舊格式已驗證)。
   - cron **每天 12:30**(系統時區 Asia/Taipei):跑全部增量,補上沒下 `/close-session` 的 session,以及收工後又繼續聊的 session。crontab:`30 12 * * *`。
 - WSL 注意:cron 只在 WSL 開著時才跑(目前 cron 有在跑,開機自動啟用)。12:30 電腦沒開就略過那天,下次執行會補上,不會掉資料。
 - **子 session 用 `parent_session_id` 判斷**(只有 30 個有,父 session 都存在)。`session_created_reason` 不可靠:zawa 直接開的主對話也標 `subagent`。
 - 對帳(2026-11-19 首次全量):727 個 `.json` = 470 匯出 + 30 子 session + 227 空對話,無遺漏。Claude Code 8 個 transcript 中 3 個有對話,全數匯出。
-- 增量判斷實際用 `.json` 與 `.jsonl` 的 mtime + 大小(對話先寫進 `.jsonl`,`updated_at` 較晚才更新)。
+- 增量判斷實際用舊格式 `.json` 與 `.jsonl`、新格式 `session.json` 與 `messages.jsonl` 的 mtime + 大小(對話先寫進 `.jsonl`/`messages.jsonl`,`updated_at` 較晚才更新)。
 - 要全部重來用 `--full`。
 
 ## 3. 決策紀錄
@@ -92,7 +104,7 @@ ai_session_export 用**狀態檔**(預設在 `~/.local/share/ai-session-export/`
 
 | 元件 | 位置 | 說明 |
 |------|------|------|
-| 匯出工具 | `~/proj/my/ai_session_export`(private fork;`origin`=zawachu-cloud,`upstream`=grapeot) | 新增 `--source kiro`、`--session-id`;`redact.py` 對所有來源遮罩。venv 在 `.venv/`。 |
+| 匯出工具 | `~/proj/my/ai_session_export`(private fork;`origin`=zawachu-cloud,`upstream`=grapeot) | 新增 `--source kiro`、`--session-id`、`--kiro-workspace-root`(Kiro 新舊格式,見 §2a);`redact.py` 對所有來源遮罩。venv 在 `.venv/`。 |
 | 入口腳本 | `scripts/session-export.sh` | 無參數(cron):kiro + claude-code 增量 → gitleaks → 加密備份並 push。`--current`(close-session):只匯出 `$KIRO_SESSION_ID`。 |
 | 加密備份 | `scripts/session_archive.py backup / restore` | 每個檔各自 age 加密成 `blobs/<hash>.age`,檔名用雜湊(原檔名含標題),對照表 `manifest.json.age` 也加密。只重新加密有變動的檔(本機 `.backup_index.json` 記 sha256)。 |
 | 備份 repo | `~/proj/my/private_session_data` → `zawachu-cloud/private_session_data`(private) | 只有加密檔。 |
