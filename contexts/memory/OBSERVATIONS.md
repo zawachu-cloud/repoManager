@@ -85,3 +85,7 @@ Date: 2026-11-24
 🟡 Medium: [發現] orca 的 workspace 目錄是 workspaces/<專案>/<worktree 名>,和 zawa 原本預期的 workspaces/<專案> 不同。zawa 也發現 orca 的 .env 管理方式和他以往不同,之後教他 orca 的流程時要特別說明這兩點。
 🟢 Low: [發現] orca 會自動呼叫 Claude Code 產生 git branch 名稱。在 killifish 這幾個 session 中 Claude Code 未登入(Not logged in),所以 AI 沒有回答,只留下 prompt 存檔。要用這項功能得先在 WSL 裡 /login。
 🟢 Low: [專案狀態] zawa 在 orca 下手動建了 psapi-dotnet 的 git 目錄(~/orca/workspaces/api/git-gitlab.com-bu00-rd-api-psapi-dotnet.git),覺得結果怪怪的,請 AI 檢查。這可能是 orca 對 repo 的 clone 或 bare 結構,內容待後續確認。
+
+Date: 2026-11-25
+
+🟡 Medium: [決策] /pipeline 改成 v2,吸收 mattpocock/skills 的 spec → TDD → review 作法:保留 orchestrator 分派、model routing、tmp/ 計畫檔,不搬 issue tracker、worktree、整合 branch、PR。測試改由 code 先寫(TDD),移除 aux 的 test 階段;中型以上任務新增 plan(opus)審查階段,只讀不改;測試的驗證入口由 orchestrator / plan 自己決定,有疑慮才用白話問 zawa。計畫模板與 TDD 規則放 `~/.kiro/skills/pipeline/`(plan-template.md、tdd.md),NOTICE.md 附 MIT 授權。sync-kiro.sh 改成同步整個 skill 目錄。

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 把全域 ~/.kiro/ 的 model routing 設定複製回 templates/.kiro/(版控備份)。
 # 用法:改完 ~/.kiro/ 後執行 scripts/sync-kiro.sh,確認 git diff 後 commit。
-# 只同步下列清單,不會碰 ~/.kiro/ 的其他檔。
+# 只同步下列清單,不會碰 ~/.kiro/ 的其他檔。skill 同步整個目錄,不刪目的地多出的檔。
 set -euo pipefail
 
 SRC="${HOME}/.kiro"
@@ -26,14 +26,15 @@ for name in "${AGENTS[@]}"; do
 done
 
 for name in "${SKILLS[@]}"; do
-  src="${SRC}/skills/${name}/SKILL.md"
-  if [[ ! -f "${src}" ]]; then
-    echo "缺少 ${src},略過" >&2
+  src="${SRC}/skills/${name}"
+  if [[ ! -f "${src}/SKILL.md" ]]; then
+    echo "缺少 ${src}/SKILL.md,略過" >&2
     continue
   fi
   mkdir -p "${DST}/skills/${name}"
-  cp "${src}" "${DST}/skills/${name}/SKILL.md"
-  echo "skill  ${name}"
+  # 整個目錄的檔都同步(SKILL.md、模板、NOTICE 等);不刪目的地多出的檔
+  cp -a "${src}/." "${DST}/skills/${name}/"
+  echo "skill  ${name}($(find "${src}" -type f | wc -l) 個檔)"
 done
 
 echo "--- git 變更 ---"

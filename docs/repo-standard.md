@@ -63,7 +63,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 |-------|-------|------|--------|
 | `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;pipeline 中當子項目架構師(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
-| `aux` | `claude-haiku-5.5` | 分析 log、寫單元測試、寫文件等輔助工作(pipeline 的 `doc` 階段改用 sonnet,見 §5a) | `ctrl+shift+u` |
+| `aux` | `claude-haiku-5.5` | 分析 log、寫文件等輔助工作。pipeline 不派它寫測試(測試由 `code` 先寫);`doc` 階段改用 sonnet,見 §5a | `ctrl+shift+u` |
 
 **存放與同步**:
 
@@ -85,7 +85,7 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 - **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
 - **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟 zawa 確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
 - **大量 log**(單檔約 2000 行以上或多份):orchestrator 不整份讀,先派 `aux` 篩出錯誤段落、時間線、可疑點寫進 `tmp/log-<主題>.md`,只回摘要與證據位置(檔名:行號);orchestrator 依摘要跟 zawa 討論,需要時只讀特定段落。一般大小的 log 自己讀。
-- **`pipeline` skill**:`/pipeline <任務>` → 拆解並確認 → 規劃子項目(自己或派 plan,可並行)→ 每個子項目跑 `code`,之後 `test`、`doc` 並行。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。在 `~/.kiro/skills/pipeline/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 釐清需求並拆解(垂直切、判斷規模)→ 規劃子項目(自己或派 plan,可並行,依 `plan-template.md`)→ `code` 以 TDD 實作(先寫測試,規則在 `tdd.md`)→ 中型以上派 `plan` 審查(只讀不改,寫 `tmp/review-<子項目>.md`)→ `doc`。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。流程細節見 SKILL.md,部分作法改寫自 mattpocock/skills(MIT,見 `NOTICE.md`)。在 `~/.kiro/skills/pipeline/`,備份在 `templates/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → 直接討論,或 `/pipeline <要做的任務>`。
 

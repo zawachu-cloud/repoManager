@@ -16,7 +16,7 @@
   | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
   | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
-| `/pipeline` | orchestrator(總架構師)拆解任務,視情況派 plan 規劃子項目,再派 code→test、doc,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+| `/pipeline` | orchestrator(總架構師)釐清需求並拆解,視情況派 plan 規劃,code 以 TDD 實作,中型以上派 plan 審查,aux 補文件,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/{pipeline,recall}/`)。
 - **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道 zawa 是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
