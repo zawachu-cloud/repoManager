@@ -85,3 +85,7 @@ Date: 2026-11-24
 🟡 Medium: [發現] orca 的 workspace 目錄是 workspaces/<專案>/<worktree 名>,和 zawa 原本預期的 workspaces/<專案> 不同。zawa 也發現 orca 的 .env 管理方式和他以往不同,之後教他 orca 的流程時要特別說明這兩點。
 🟢 Low: [發現] orca 會自動呼叫 Claude Code 產生 git branch 名稱。在 killifish 這幾個 session 中 Claude Code 未登入(Not logged in),所以 AI 沒有回答,只留下 prompt 存檔。要用這項功能得先在 WSL 裡 /login。
 🟢 Low: [專案狀態] zawa 在 orca 下手動建了 psapi-dotnet 的 git 目錄(~/orca/workspaces/api/git-gitlab.com-bu00-rd-api-psapi-dotnet.git),覺得結果怪怪的,請 AI 檢查。這可能是 orca 對 repo 的 clone 或 bare 結構,內容待後續確認。
+
+Date: 2026-11-25
+
+🔴 High: [Kiro 權限] subagent 執行 shell 時,父 agent 與子 agent 兩層 permissions deny 都會檢查,符合任一層就擋(訊息 Source 分別為 agent-profile / subagent-profile)。repo 本地 code.json 放行 DROP 不夠,從 orchestrator 派工還要在該 repo 放本地 orchestrator.json 拿掉 DROP/TRUNCATE deny;default agent 派工無此問題。見 docs/repo-standard.md §5b。

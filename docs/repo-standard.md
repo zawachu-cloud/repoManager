@@ -107,7 +107,8 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 - **怎麼套用**:
   1. 複製 `templates/.kiro/agents/code-lab.json` 到該 repo 的 `.kiro/agents/code.json`(`name` 維持 `code`,repo 內同名 agent 會覆蓋全域)。
   2. 把 `__PROTECTED__` 換成受保護容器的名稱關鍵字(同一台主機上不可動的服務)。
-  3. 在該 repo 的 AGENTS.md 註明:覆蓋了全域 `code`、可 DROP 的測試容器 / 庫清單、受保護容器清單。
+  3. 要從 `orchestrator` 派工 DROP 時,另外複製 `~/.kiro/agents/orchestrator.json` 到該 repo 的 `.kiro/agents/orchestrator.json`,刪掉 shell deny 裡 8 條 `DROP/TRUNCATE` 規則,並刪掉 `kiroUpgrade` 欄位。原因是 subagent 執行指令時,父 agent 與子 agent 兩層的 deny 都會檢查,符合任一層就擋(擋下訊息的 `Source` 分別是 `agent-profile` 與 `subagent-profile`)。orchestrator 本身沒有 shell 工具,拿掉這些規則不會讓它自己能下指令。default agent 沒有這類 deny,從 default 派工不需要這一步。
+  4. 在該 repo 的 AGENTS.md 註明:覆蓋了全域 `code`(與 `orchestrator`)、可 DROP 的測試容器 / 庫清單、受保護容器清單。
 - **範本差異**:相對全域 `code`,只移除 `DROP/TRUNCATE` 的擋規則,並加上受保護容器的 `docker stop/rm/restart/kill/exec/update/rename` 與 `docker compose down` 擋規則。其餘(`rm -`、force push 等)照擋。`docker ps`、`docker inspect` 不擋,用來確認受保護容器狀態。
 - **範本來源**:`code-lab.json` 的來源是 `templates/`,不在 `~/.kiro/`,不列入 `scripts/sync-kiro.sh`。
 - **限制可刪的庫名**:字串比對做不到,改在資料庫帳號權限做(例如只授權 `tmp\_%` 的帳號)。
