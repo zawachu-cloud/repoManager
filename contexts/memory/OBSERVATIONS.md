@@ -93,3 +93,5 @@ Date: 2026-11-25
 🟡 Medium: [決策] 採用 improve-codebase-architecture 改寫版(來源 mattpocock/skills,MIT),放全域 `~/.kiro/skills/improve-codebase-architecture/`:orchestrator 派 plan 掃描並寫 Markdown 報告到 repo 的 `tmp/`,zawa 挑一項後追問、必要時 design it twice,決策清楚再交給 /pipeline 實作,本身不改程式碼。不建 GLOSSARY.md 與 docs/adr/,用語與否決理由記進該 repo 的 docs/。同批評估過 diagnosing-bugs,暫不做,先驗證新 pipeline。
 
 🟡 Medium: [決策] 每個 repo 必備 `docs/glossary.md`(名詞表),取代先前「不建 GLOSSARY.md」的做法。格式比 mattpocock 多「程式名稱」欄,內容可先放空。寫入規則:zawa 講明或確認的直接寫,AI 從程式推出的標「(待確認)」,用語衝突時當場問 zawa 並記進「曾經混用」。範本在 `templates/docs/glossary.md`,pipeline、improve-codebase-architecture、create-repo、check-repo、close-session 都依它運作。
+
+🟡 Medium: [決策] close session 新增第 4 步「清理暫存」(`docs/repo-standard.md` §3):本 session 由 AI 建立、工作已完成的 `tmp/` 檔(plan-*、review-*、arch-*、log-*、下載的參考原文、.bak、下載暫存)直接刪;zawa 放的資料、舊 session 留下或來源不明、工作未完成的檔先問。只刪 `tmp/` 內的檔,逐檔刪,不用 `rm -rf`,空目錄用 `rmdir`,`tmp/` 本身保留。理由:zawa 已授權這類刪除,範圍以外仍依「破壞性動作先確認」。

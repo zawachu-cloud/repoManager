@@ -13,7 +13,7 @@
   | 指令 | 用途 |
   |------|------|
   | `/create-repo` | 建立一個新 repo(local 新建或從 git ssh url clone),並補齊必備結構、寫入第 1 份工作。 |
-  | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致。 |
+  | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致 → 清理暫存。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
   | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
 | `/pipeline` | orchestrator(總架構師)釐清需求並拆解,視情況派 plan 規劃,code 以 TDD 實作,中型以上派 plan 審查,aux 補文件,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
@@ -85,5 +85,5 @@ repoManager/
 - 要「開新 repo」時走 `/create-repo`;「收工」時走 `/close-session`;「檢查某 repo 合不合規」時走 `/check-repo`。
 - 三個 skill 的判斷基準一律回到 `docs/repo-standard.md`,不要各自硬編規則。
 - 建立新 repo 時以 `templates/` 為範本;新 repo 已存在的檔**不覆蓋**,缺的才補。
-- 收尾(close session)依 `docs/repo-standard.md` §3 三步驟進行。
+- 收尾(close session)依 `docs/repo-standard.md` §3 四步驟進行。
 - **context 系統**:改全域規則就改 `rules/*.md`(symlink 立即生效,不用 sync);值得跨 session 記住的經驗或決策,追加到 `contexts/memory/OBSERVATIONS.md`(格式見該檔,**不寫機密**)。repoManager 因此含個人記憶,**不可轉 public**。

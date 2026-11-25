@@ -38,6 +38,10 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 1. **檢查未辦事項**:本 session 有無待完成的修改、未跑的測試、未回覆的問題、TODO/暫緩項。**有就先列出並處理或向 zawa 確認**,不略過。
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
 3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。本 session 出現新業務名詞或改名,對照 `docs/glossary.md` 是否已更新。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
+4. **清理暫存**:刪除不必要的 `tmp/` 檔。zawa 已授權這類刪除,範圍以外仍依「破壞性動作先確認」。
+   - **直接刪**:本 session 由 AI 建立、對應工作已完成的 `tmp/` 檔,包含計畫檔 `plan-*`、審查檔 `review-*`、已交接的架構報告 `arch-*`、log 篩選檔 `log-*`、下載的參考原文、`.bak` 備份、下載過程的暫存檔。
+   - **先問 zawa**:zawa 放進 `tmp/` 的資料、之前 session 留下或來源不明的檔、對應工作還沒完成的檔。
+   - **做法**:只刪 `tmp/` 內的檔,逐檔刪,不用 `rm -rf`;空目錄可用 `rmdir`。`tmp/` 目錄本身保留。回報刪了哪些、哪些留著等 zawa 決定。
 
 最後執行 `~/proj/my/repoManager/scripts/session-export.sh --current` 匯出本 session 對話(見 `docs/context-system.md` §2a)。
 
@@ -52,7 +56,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 - **.kiroignore(若存在)**:未列 `tmp/`(會擋指定讀取)。
 - **機密外洩**:`git ls-files` 不應出現 `.env`、`.env.*`(除 `.env.example`)、`tmp/` 內容。
 - **文件一致**:`AGENTS.md` 有指向 `docs/`;`docs/` 非空。
-- **收尾狀態**:套用 §3 的三項檢查,回報是否可安全收尾。
+- **收尾狀態**:套用 §3 前三項檢查(第 4 步清理暫存會刪檔,check-repo 不執行),回報是否可安全收尾。
 
 輸出一份清單:每項標 ✅ 合規 / ⚠️ 建議 / ❌ 缺失,並給修正動作。
 

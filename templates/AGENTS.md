@@ -44,4 +44,4 @@
 
 - 動工前先讀 `docs/` 對應文件;修改功能後同步更新相關文件。
 - 破壞性/難復原動作(drop/truncate、force push、`reset --hard`、`rm -rf`)先向 zawa 確認。
-- 收尾(close session)依 repoManager `docs/repo-standard.md` §3:未辦事項 → git 乾淨 → 文件與程式一致。
+- 收尾(close session)依 repoManager `docs/repo-standard.md` §3:未辦事項 → git 乾淨 → 文件與程式一致 → 清理暫存。
