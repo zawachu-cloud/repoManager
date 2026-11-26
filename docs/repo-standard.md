@@ -117,3 +117,11 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 - **範本差異**:相對全域 `code`,只移除 `DROP/TRUNCATE` 的擋規則,並加上受保護容器的 `docker stop/rm/restart/kill/exec/update/rename` 與 `docker compose down` 擋規則。其餘(`rm -`、force push 等)照擋。`docker ps`、`docker inspect` 不擋,用來確認受保護容器狀態。
 - **範本來源**:`code-lab.json` 的來源是 `templates/`,不在 `~/.kiro/`,不列入 `scripts/sync-kiro.sh`。
 - **限制可刪的庫名**:字串比對做不到,改在資料庫帳號權限做(例如只授權 `tmp\_%` 的帳號)。
+
+## 6. Orca 本機機密(orca-onboard)
+
+orca 開 workspace 用 git worktree,`.env` 等不進版控的本機機密不會跟著進來。做法:機密集中到 `~/.config/<repo>/`(單一來源)+ 通用 `orca-setup.sh`(範本在 `templates/`),由 orca 在開/收 workspace 時跑它,symlink 進該 worktree。
+
+- 既有 repo 接上這套:用 `/orca-onboard`(細節見該 skill)。hr、ansible、psapi-dotnet、stocktake 都是這套。
+- **orca hook 只能手動設**:orca CLI 無設 hook 腳本的命令,`profile-state.db` 也別直接改。到 orca UI 該專案填 setup=`bash ~/.config/<repo>/orca-setup.sh "$ORCA_WORKTREE_PATH"`、archive=`bash ~/.config/<repo>/orca-setup.sh`。
+- 只收機密來源檔(`.env*`),不收衍生檔(如由腳本產生的 `config.js`)與 `tmp/`。
