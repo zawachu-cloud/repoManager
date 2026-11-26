@@ -66,14 +66,13 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 | agent | model | 負責 | 快捷鍵 |
 |-------|-------|------|--------|
-| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;互動用(`/agent plan`)。寫檔限 docs/、firstTask.md、tmp/、*.md | `ctrl+shift+p` |
-| `planner` | `claude-opus-5.5` | 與 `plan` 同內容,供 orchestrator 派工(pipeline 的子項目架構師與審查);`plan` 與 Kiro 內建 subagent 名稱衝突,派不出去,故另設 | — |
+| `planner` | `claude-opus-5.5` | 規劃、拆解、架構決策;互動用(`/agent planner`),也供 orchestrator 派工(pipeline 的子項目架構師與審查)。寫檔限 docs/、firstTask.md、tmp/、*.md | `ctrl+shift+p` |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
 | `aux` | `claude-haiku-5.5` | 分析 log、寫文件等輔助工作。pipeline 不派它寫測試(測試由 `code` 先寫);`doc` 階段改用 sonnet,見 §5a | `ctrl+shift+u` |
 
 **存放與同步**:
 
-- **全域** `~/.kiro/agents/{plan,planner,code,aux,orchestrator}.json`、`~/.kiro/skills/{pipeline,recall,improve-codebase-architecture}/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
+- **全域** `~/.kiro/agents/{planner,code,aux,orchestrator}.json`、`~/.kiro/skills/{pipeline,recall,improve-codebase-architecture}/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
 - **備份** `templates/.kiro/` → `~/.kiro/` 不在版控,改完執行 `scripts/sync-kiro.sh` 複製回來並 commit。換機器時反向複製到 `~/.kiro/` 即可還原。
 - **本地覆蓋** → 只有某 repo 需要跟全域不同(例如換 model)時,才在該 repo 放同名 `.kiro/agents/<name>.json`。本地同名檔會覆蓋全域,之後改全域不會影響它,沒必要就不要放。
 
@@ -82,7 +81,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 - 每個角色 agent 都**明確寫 `model`**。切 agent 時若新 agent 沒設 model 會沿用當下 model,寫死才可靠。
 - model id 若後端不認會報 "model is not available",用 `/model` 查實際可用字串後更新本表與 agent 檔。
 - 改 model routing **只改這裡 + agent 檔**;其他文件一律指回本節,勿重複清單。
-- 內建 `/plan`(kiro_planner)不能綁 model,故自建 `plan` agent 取代之。
+- 內建 `/plan`(kiro_planner)不能綁 model,故自建 `planner` agent 取代之。
 
 ### 5a. 自動化 pipeline(orchestrator + /pipeline)
 
@@ -102,8 +101,8 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 
 **注意**:
 
-- 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`planner`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
-- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan`、`planner`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
+- 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`planner`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
+- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`planner`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
 - 安全網:`code`/`aux` 的 `shell.deniedCommands` 擋下破壞性指令(`rm -rf`、`git reset --hard`、force push、`git clean -f`、`sudo`、`mkfs`、`dd if=`、關機、`chmod -R 777`、寫入 `/dev/sd`、SQL `DROP/TRUNCATE`),這些仍會被拒,符合「破壞性動作先確認」。此清單為 best-effort,無法涵蓋所有危險寫法。
 - 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。
 

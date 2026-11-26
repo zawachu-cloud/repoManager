@@ -44,7 +44,7 @@ repoManager/
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
 │   ├── docs/{README,glossary}.md  # glossary 為名詞表範本
-│   ├── .kiro/agents/              # agent 備份(plan/planner/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
+│   ├── .kiro/agents/              # agent 備份(planner/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
 │   └── .kiro/skills/{pipeline,recall,improve-codebase-architecture}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/
@@ -81,7 +81,7 @@ repoManager/
 - **commit / push 由 AI 決定**:完成變更後**直接** `git add / commit / push`,不用再問 zawa(zawa 已授權)。
 - **破壞性動作先確認**:`rm -rf`、`git reset --hard`、force push、覆蓋既有檔(尤其 clone 來的)等,動手前先向 zawa 確認。
 - **不擅自大重構**:規範只在 `docs/repo-standard.md` 改一處。
-- **model routing**:依任務用不同 model(`plan`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` 與 `improve-codebase-architecture` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
+- **model routing**:依任務用不同 model(`planner`=opus-5.5 / `code`=sonnet-5.5 / `aux`=haiku-5.5)。角色 agent 與 `orchestrator`、`pipeline` 與 `improve-codebase-architecture` skill **只維護全域 `~/.kiro/`**;改完跑 `scripts/sync-kiro.sh` 同步回 `templates/.kiro/` 並 commit(版控備份)。自動化流程 `/agent orchestrator` → `/pipeline <任務>`。定義與用法是 `docs/repo-standard.md` §5 / §5a(單一真實來源),勿在他處重複清單。
 
 ## 給 AI 代理的工作準則
 

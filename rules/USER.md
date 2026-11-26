@@ -12,7 +12,7 @@
 
 ## 工作環境
 
-- 主力工具:Kiro CLI(角色 agent:`plan` / `code` / `aux` / `orchestrator`,流程用 `/pipeline`)。也有 Claude Code。
+- 主力工具:Kiro CLI(角色 agent:`planner` / `code` / `aux` / `orchestrator`,流程用 `/pipeline`)。也有 Claude Code。
 - 機器:Ubuntu;專案放 `~/orca/projects/`(orca 管理);尚未搬過去的仍在 `~/proj/my/`。
 - repo 的開與收走 repoManager 的 `/create-repo`、`/close-session`、`/check-repo`。
 - Jira 連線（共用）：憑證在 `~/.config/jira/.env`（不進版控），用 `set -a; source ~/.config/jira/.env; set +a` 載入；各 repo 不另放 Jira 憑證。
@@ -28,7 +28,7 @@
 - `stocktake`:店員用手機盤點庫存並預估可用天數。獨立 Supabase,盤點保留 3 年(pg_cron 每月清理,已上線)。
 - `innerDoc`:公司人事表單(試用期、離職、資遣、招募)的 Markdown 原始檔與 PDF 轉出,改 md 再轉檔。
 - `modelRouting`:<待補>
-- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)、plan/code/aux model routing 與 shell 權限規則。近期:新增 /orca-onboard skill(既有 repo 的本機機密集中到 ~/.config/<repo>/ 單一來源 + 通用 orca-setup.sh,開 workspace 自動 symlink);週三回顧改為直接合併重複筆記。
+- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)、planner/code/aux model routing 與 shell 權限規則。近期:新增 /orca-onboard skill(既有 repo 的本機機密集中到 ~/.config/<repo>/ 單一來源 + 通用 orca-setup.sh,開 workspace 自動 symlink);週三回顧改為直接合併重複筆記。
 - `ai_session_export`:對話存檔匯出工具(fork 自 upstream),含 Kiro adapter 與遮罩,cron 每天增量匯出。
 - `semantic-search-skill`:本機 Ollama 語意搜尋,查對話存檔與 OBSERVATIONS,供 /recall skill 使用。
 - `private_session_data`:對話存檔的 age 加密備份 private repo。

@@ -119,4 +119,4 @@ Date: 2026-11-26
 
 Date: 2026-11-26
 
-🔴 High: [方法論/約束] Kiro 的 subagent 名稱 `plan` 與內建名稱衝突,orchestrator 的派工工具清單不會出現它。規劃用的 subagent 改名 `planner`(內容與 plan 相同),orchestrator 與 pipeline、improve-codebase-architecture skill 都改派 planner;plan.json 留作互動用(`/agent plan`)。
+🔴 High: [方法論/約束] Kiro 的 subagent 名稱 `plan` 與內建名稱衝突,orchestrator 的派工工具清單不會出現它。規劃用的 subagent 改名 `planner`(內容與 plan 相同),orchestrator 與 pipeline、improve-codebase-architecture skill 都改派 planner;plan.json 已刪除,規劃角色只有 planner(互動與派工共用)。

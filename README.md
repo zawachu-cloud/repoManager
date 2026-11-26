@@ -25,10 +25,10 @@ scripts/link-rules.sh                                          # 掛上全域規
 
 ## Model routing 與 pipeline
 
-依任務用不同 model:`plan`=opus-5.5、`code`=sonnet-5.5、`aux`=haiku-5.5(log、文件)。設定只維護全域 `~/.kiro/`,所有 repo 共用。
+依任務用不同 model:`planner`=opus-5.5、`code`=sonnet-5.5、`aux`=haiku-5.5(log、文件)。設定只維護全域 `~/.kiro/`,所有 repo 共用。
 
 ```
-/agent plan | code | aux                    # 手動切換角色
+/agent planner | code | aux                    # 手動切換角色
 /agent orchestrator                         # 總架構師:直接討論,或 /pipeline 拆解並分派
 /pipeline 為報表頁加 CSV 匯出功能
 ```

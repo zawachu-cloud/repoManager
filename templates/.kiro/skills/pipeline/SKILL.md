@@ -25,7 +25,7 @@ zawa 要做的任務:$ARGUMENTS
 - `doc` stage 必須在 stage 參數帶 `"model": "claude-sonnet-5.5"`。
 - 都用 **subagent** 工具,`mode=blocking`。
 - 只有一個子項目時,stage 名稱可省略 `-<子項目>`。
-- 規劃角色的 subagent 名稱是 `planner`(`plan` 與 Kiro 內建名稱衝突,派不出去);工具清單沒有 `subagent_planner` 時,規劃自己做,審查改派 `code` 唯讀執行(只准寫 `tmp/review-<子項目>.md`)。
+- 規劃角色的 subagent 名稱是 `planner`;工具清單沒有 `subagent_planner` 時,規劃自己做,審查改派 `code` 唯讀執行(只准寫 `tmp/review-<子項目>.md`)。
 - 模板與規則在本 skill 同目錄:`plan-template.md`(計畫檔格式)、`tdd.md`(code 的測試規則)。派 subagent 時一律寫絕對路徑 `~/.kiro/skills/pipeline/plan-template.md`、`~/.kiro/skills/pipeline/tdd.md`(若 repo 有本地覆蓋的 `.kiro/skills/pipeline/`,改用該路徑)。
 
 ## 流程
