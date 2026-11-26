@@ -39,7 +39,7 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 2. **檢查 git 狀態是否乾淨**:`git status` 應無未預期的未追蹤/未提交變更;確認 `.env` 等機密**沒有**被 add 進去。
 3. **檢查本 session 的動作與文件是否一致**:這次改了什麼,就對照 `AGENTS.md`、`docs/`、`firstTask.md` 是否同步更新;發現落差就補正或明確回報。本 session 出現新業務名詞或改名,對照 `docs/glossary.md` 是否已更新。順便檢查 repoManager `rules/USER.md`「目前的專案」中當下 repo 那一行,需要才更新(只動那一行)。
 4. **清理暫存**:刪除不必要的 `tmp/` 檔。zawa 已授權這類刪除,範圍以外仍依「破壞性動作先確認」。
-   - **直接刪**:本 session 由 AI 建立、對應工作已完成的 `tmp/` 檔,包含計畫檔 `plan-*`、審查檔 `review-*`、已交接的架構報告 `arch-*`、log 篩選檔 `log-*`、下載的參考原文、`.bak` 備份、下載過程的暫存檔。
+   - **直接刪**:本 session 由 AI 建立、對應工作已完成的 `tmp/` 檔,包含計畫檔 `plan-*`(中型以上任務的計畫須已存進 `docs/issues/`,見 §5a;沒存的先存再刪,或列入回報)、審查檔 `review-*`、已交接的架構報告 `arch-*`、log 篩選檔 `log-*`、下載的參考原文、`.bak` 備份、下載過程的暫存檔。
    - **先問 zawa**:zawa 放進 `tmp/` 的資料、之前 session 留下或來源不明的檔、對應工作還沒完成的檔。
    - **做法**:只刪 `tmp/` 內的檔,逐檔刪,不用 `rm -rf`;空目錄可用 `rmdir`。`tmp/` 目錄本身保留。回報刪了哪些、哪些留著等 zawa 決定。
 
@@ -97,6 +97,7 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 - 有需要 zawa 決定的選項時(orchestrator 拆解時,或 plan 回報時),會先停下來問;zawa**直接回覆**即可接續,不用再打 `/pipeline`。
 - 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的部分,子項目計畫小改自己改,大改重派 plan。
 - 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。plan 回報只給「摘要」與「需要 zawa 決定」兩段,完整計畫留在檔案裡。
+- **計畫存檔**:中型以上任務完成後,`doc` 階段把計畫的「問題」「解法」「實作決定」「不做的範圍」存進該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(狀態「已完成」,不開 branch);小型任務不存。細節見 pipeline SKILL.md 第 5 步。
 
 **注意**:
 

@@ -99,6 +99,11 @@ prompt 要帶計畫檔路徑、`tdd.md` 路徑、zawa 的決定。規則摘要(�
 
 小型任務的 `doc-<子項目>` `depends_on` code。中型以上 `depends_on` review(有 fix 時再加 fix)。
 
+**計畫存檔(中型以上才做)**:doc 的 prompt 另外要求:讀 `tmp/plan-<子項目>.md`,把「問題」「解法」「實作決定」「不做的範圍」四段(標題照 `plan-template.md`)存成該 repo 的 `docs/issues/[YYMMDD]<slug>.md`。「實作提示」不存。
+- slug 英文小寫、`-` 分隔。檔案開頭寫「狀態:已完成」、日期、一行「由 /pipeline 計畫存檔」。
+- 不另開 branch(這是完成紀錄,不是待辦開單)。repo 已有其他 issue 慣例時依 repo。
+- 同一任務的多個子項目合併成一份。檔案已存在不覆蓋,改用新 slug。小型任務不存。
+
 所有 stage 都要求只回精簡摘要。跑完整合各子項目結果回報 zawa。任一階段失敗會 fail-fast,立刻回報錯誤與建議的處理方式。
 
 ## 跑完後 zawa 回覆修改意見
@@ -114,6 +119,8 @@ zawa 直接回覆即可,不必重打 `/pipeline`。依修改內容**只重跑需
 | 只改測試 | code(測試由 code 負責) |
 | 審查意見 | 必修與 zawa 點名的建議項目,帶 review 檔路徑重派 code |
 | 只改文件 | doc |
+
+計畫改動時,同步更新已存的 `docs/issues/` 檔。
 
 子 agent 跑完就結束,無法沿用前一輪的 session,重跑時要把 zawa 的意見和需要的上下文寫進新的 prompt。
 

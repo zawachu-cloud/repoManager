@@ -89,3 +89,9 @@ Date: 2026-11-25
 🟡 Medium: [專案狀態] Kiro 新版 session(從 orca/ACP 開的)存在 `~/.kiro/sessions/<sha256(工作目錄路徑) 前 16 碼>/sess_<UUID>/`,檔案為 `session.json` + `messages.jsonl`,與舊格式 `~/.kiro/sessions/cli/<id>.json` + `.jsonl` 並存。舊的匯出只掃 cli/,因此 `/close-session` 找不到新格式 session,回報 `session metadata not found`;每日 cron 也漏匯新格式(約 40 個 11/19 起的 session)。
 
 🟡 Medium: [決策] 修正:ai_session_export commit d0387ba 新增 `sources/kiro_workspace.py` 與 `--kiro-workspace-root`(預設 ~/.kiro/sessions),兩種格式都掃、輸出到同一個 kiro/ 資料夾;新格式只匯出 user 與 assistant 文字,子代理不匯出。新格式的 project_directory 是 orca 工作目錄,zawa 同意照實記錄。文件已更新於 docs/context-system.md §2a。
+
+Date: 2026-11-26
+
+🟡 Medium: [決策] /pipeline 中型以上任務完成後,doc 階段把計畫的「問題」「解法」「實作決定」「不做的範圍」四段存進該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(狀態「已完成」,不開 branch);「實作提示」不存,小型任務不存。close session 刪 `plan-*` 前要確認已存檔。理由:tmp/ 的計畫檔會被清掉,決策與取捨需要留在版控。
+
+🟢 Low: [決策] mattpocock to-spec 的完整情境清單與 prior art 欄位評估過,zawa 決定先不加進 plan-template.md,之後有需要再議。
