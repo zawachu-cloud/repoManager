@@ -116,3 +116,7 @@ Date: 2026-11-26
 🟢 Low: [專案狀態] repoManager 的 heartbeat.py 超過 400 行,已拆成三個檔(各約 120~200 行),28 項測試通過。週三回顧現在同時讀 ~/orca/projects 與 ~/proj/my。
 🟢 Low: [發現] psapi-dotnet 的 GetHostGameInfo 快取 key 含 access_token,命中率低,且回應含玩家注單號卻允許中間層快取 60 秒。RD01-7178 的建議是拆兩段快取並改 private,待 zawa 確認。
 🟢 Low: [發現] psapi-dotnet 簽章規劃發現兩個實作風險:BaseRequest.ToString() 不做 URL 編碼,HostApi 的 HttpClient 開著自動轉址。開 sign_enable 的 host 要處理這兩點。
+
+Date: 2026-11-26
+
+🔴 High: [方法論/約束] Kiro 的 subagent 名稱 `plan` 與內建名稱衝突,orchestrator 的派工工具清單不會出現它。規劃用的 subagent 改名 `planner`(內容與 plan 相同),orchestrator 與 pipeline、improve-codebase-architecture skill 都改派 planner;plan.json 留作互動用(`/agent plan`)。

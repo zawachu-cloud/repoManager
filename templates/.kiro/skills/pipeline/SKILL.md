@@ -1,13 +1,13 @@
 ---
 name: pipeline
-description: orchestrator(總架構師,opus)釐清需求並拆解,自己寫或派 plan 產出計畫,code 以 TDD 實作(先寫測試),中型以上任務派 plan 審查,aux 補文件,各階段走各自 model。用法:先 /agent orchestrator,再 /pipeline <要做的任務>;多個任務用 /pipeline 批次做 <任務 A、B、C>(一輪問完後不再互動)。
+description: orchestrator(總架構師,opus)釐清需求並拆解,自己寫或派 planner 產出計畫,code 以 TDD 實作(先寫測試),中型以上任務派 planner 審查,aux 補文件,各階段走各自 model。用法:先 /agent orchestrator,再 /pipeline <要做的任務>;多個任務用 /pipeline 批次做 <任務 A、B、C>(一輪問完後不再互動)。
 ---
 
 # 釐清 → 規劃 → code(TDD)→ 審查 → 文件 pipeline
 
 zawa 要做的任務:$ARGUMENTS
 
-你(orchestrator)是總架構師:自己釐清需求、拆解、跟 zawa 討論。子項目的細部規劃視情況派給 `plan`,實作派 `code`,審查派 `plan`,文件派 `aux`。
+你(orchestrator)是總架構師:自己釐清需求、拆解、跟 zawa 討論。子項目的細部規劃視情況派給 `planner`,實作派 `code`,審查派 `planner`,文件派 `aux`。
 
 部分作法改寫自 mattpocock/skills,授權見同目錄 `NOTICE.md`。
 
@@ -16,16 +16,16 @@ zawa 要做的任務:$ARGUMENTS
 | stage | role | model 覆蓋 | 做什麼 |
 |-------|------|-----------|--------|
 | (自己) | `orchestrator` | — | 釐清需求、拆解、介面與相依、跟 zawa 確認、整合 |
-| `plan-<子項目>` | `plan` | — | 依 `plan-template.md` 寫 `tmp/plan-<子項目>.md` |
+| `plan-<子項目>` | `planner` | — | 依 `plan-template.md` 寫 `tmp/plan-<子項目>.md` |
 | `code-<子項目>` | `code` | — | 讀計畫與 `tdd.md`,一次一條小功能,先寫測試再實作 |
-| `review-<子項目>` | `plan` | — | 中型以上才跑。只讀不改程式,寫 `tmp/review-<子項目>.md` |
+| `review-<子項目>` | `planner` | — | 中型以上才跑。只讀不改程式,寫 `tmp/review-<子項目>.md` |
 | `doc-<子項目>` | `aux` | `claude-sonnet-5.5` | 補 / 更新文件 |
 
-- 沒有覆蓋的 stage,model 由 role 對應的 agent 決定(`plan`=opus-5.5、`code`=sonnet-5.5、`aux`=haiku-5.5)。
+- 沒有覆蓋的 stage,model 由 role 對應的 agent 決定(`planner`=opus-5.5、`code`=sonnet-5.5、`aux`=haiku-5.5)。
 - `doc` stage 必須在 stage 參數帶 `"model": "claude-sonnet-5.5"`。
 - 都用 **subagent** 工具,`mode=blocking`。
 - 只有一個子項目時,stage 名稱可省略 `-<子項目>`。
-- 環境沒有 `plan` subagent 時:規劃自己做;審查改派 `code` 唯讀執行(只准寫 `tmp/review-<子項目>.md`,不改程式、不 commit)。
+- 規劃角色的 subagent 名稱是 `planner`(`plan` 與 Kiro 內建名稱衝突,派不出去);工具清單沒有 `subagent_planner` 時,規劃自己做,審查改派 `code` 唯讀執行(只准寫 `tmp/review-<子項目>.md`)。
 - 模板與規則在本 skill 同目錄:`plan-template.md`(計畫檔格式)、`tdd.md`(code 的測試規則)。派 subagent 時一律寫絕對路徑 `~/.kiro/skills/pipeline/plan-template.md`、`~/.kiro/skills/pipeline/tdd.md`(若 repo 有本地覆蓋的 `.kiro/skills/pipeline/`,改用該路徑)。
 
 ## 流程
@@ -43,7 +43,7 @@ zawa 要做的任務:$ARGUMENTS
 
 - 優先垂直切。每個子項目做完,都能從頭到尾跑起來驗證。避免按資料庫層、API 層、畫面層水平切。
 - 列出每個子項目做什麼、子項目之間的介面與相依。
-- 每個子項目由誰規劃:**自己**(小、或跟其他項目耦合深)或**派 plan**(邊界清楚、可獨立規劃、要讀不少程式碼或文件)。
+- 每個子項目由誰規劃:**自己**(小、或跟其他項目耦合深)或**派 planner**(邊界清楚、可獨立規劃、要讀不少程式碼或文件)。
 
 **檢查測試環境**:看該 repo 有沒有測試框架與型別檢查指令。沒有的話,列入「需要 zawa 決定」(要不要新增、用哪個)。code 不得自行新增依賴。
 
@@ -61,9 +61,9 @@ zawa 要做的任務:$ARGUMENTS
 計畫檔一律照 `plan-template.md`。
 
 - **自己規劃的**:直接寫進 `tmp/plan-<子項目>.md`。
-- **派 plan 的**:每個子項目一個 `plan-<子項目>` stage,互不相依的並行。prompt 要帶子項目範圍、與其他子項目的介面、zawa 已做的決定、計畫檔路徑、`plan-template.md` 路徑,並要求回報只給「摘要」與「需要 zawa 決定」兩段(沒有就寫「無」)。
+- **派 planner 的**:每個子項目一個 `plan-<子項目>` stage,互不相依的並行。prompt 要帶子項目範圍、與其他子項目的介面、zawa 已做的決定、計畫檔路徑、`plan-template.md` 路徑,並要求回報只給「摘要」與「需要 zawa 決定」兩段(沒有就寫「無」)。
 
-plan 回報的「需要 zawa 決定」有選項時,停下來問 zawa,收到回覆後把決定補寫進對應計畫檔。
+planner 回報的「需要 zawa 決定」有選項時,停下來問 zawa,收到回覆後把決定補寫進對應計畫檔。
 
 ### 第 3 步:實作(code)
 
@@ -79,7 +79,7 @@ prompt 要帶計畫檔路徑、`tdd.md` 路徑、zawa 的決定。規則摘要(�
 
 回報只給精簡摘要:改了哪些檔、每條切片對應的測試、測試與型別檢查結果、偏離計畫之處、遇到的問題。
 
-### 第 4 步:審查(中型以上,plan)
+### 第 4 步:審查(中型以上,planner)
 
 `review-<子項目>` `depends_on` 該 code stage。審查者只讀不改程式,對照計畫檢查:
 

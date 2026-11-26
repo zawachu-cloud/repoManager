@@ -25,16 +25,16 @@ description: 掃描 codebase,找出可以加深或整併的模組,產出 Markdow
 
 ## 步驟
 
-### 1. 探索(派 plan,opus)
+### 1. 探索(派 planner,opus)
 
-派一個 `plan` subagent(`mode=blocking`)。prompt 帶:
+派一個 `planner` subagent(`mode=blocking`)。prompt 帶:
 
 - 範圍($ARGUMENTS 或整個 repo)。
 - 報告模板絕對路徑 `~/.kiro/skills/improve-codebase-architecture/report-template.md`。
 - 輸出路徑 `tmp/arch-<YYMMDD>.md`。
 - 只讀不改程式。
 
-plan 要做:
+planner 要做:
 
 - 沒指定範圍時,用 `git log --oneline` 與變更頻率找熱點。最近常改的地方優先,加深之後收益最大。
 - 讀該 repo 的 `AGENTS.md`、`docs/glossary.md` 與相關 `docs/`,用 repo 既有用語。
@@ -58,7 +58,7 @@ plan 要做:
 
 - 追問方式同 `/pipeline` 第 1 步:能查的不問;每輪編號列出,最多約 5 題;每題附建議答案,寫成「回答 yes 就採用建議」;答案取決於前一題的放到下一輪。
 - 追問範圍:限制條件、相依對象、加深後模組的樣子、驗證入口後面放什麼、哪些既有測試會保留。
-- 介面有多種可能時,派 2 個 `plan` 並行,各設計一版(design it twice),分別寫進 `tmp/arch-<YYMMDD>-<項目>-a.md` 與 `-b.md`。兩版要差異明顯,例如一版極小化介面,一版以最常見的呼叫端為準。每版寫出:介面(含規則與錯誤情況)、呼叫範例、藏在驗證入口後面的東西、取捨。orchestrator 比較兩版的深度、變更集中程度與驗證入口位置,給出傾向的建議,不丟選單。
+- 介面有多種可能時,派 2 個 `planner` 並行,各設計一版(design it twice),分別寫進 `tmp/arch-<YYMMDD>-<項目>-a.md` 與 `-b.md`。兩版要差異明顯,例如一版極小化介面,一版以最常見的呼叫端為準。每版寫出:介面(含規則與錯誤情況)、呼叫範例、藏在驗證入口後面的東西、取捨。orchestrator 比較兩版的深度、變更集中程度與驗證入口位置,給出傾向的建議,不丟選單。
 - 相依對象分類會影響測試方式:純記憶體運算可直接併模組測;有本機替身(例如記憶體檔案系統)的用替身;自己的遠端服務要定義介面並提供記憶體版;第三方服務用注入的 mock。
 - 測試策略是取代而非疊加:加深後在新介面寫測試,淺模組的舊單元測試改刪除。
 - 決策寫回 `tmp/arch-<YYMMDD>.md` 該項目的「決策」段。

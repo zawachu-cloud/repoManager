@@ -13,7 +13,7 @@ repoManager 的業務名詞。程式命名、測試名稱、計畫與文件一�
 
 | 詞 | 程式名稱 | 定義 | 避免用 |
 |----|---------|------|--------|
-| pipeline | `/pipeline` skill | orchestrator 依序派 plan、code、review、doc 完成一項任務的自動化流程。 | |
+| pipeline | `/pipeline` skill | orchestrator 依序派 planner、code、review、doc 完成一項任務的自動化流程。 | |
 | orchestrator | `orchestrator` agent | 總架構師角色。負責釐清需求、拆子項目、跟 zawa 確認並整合各階段結果,不自己實作。 | |
 | 子項目 | `plan-<子項目>`、`tmp/plan-<子項目>.md` | 任務拆出來的一塊獨立工作,每個子項目有自己的計畫檔,做完能從頭到尾驗證。 | |
 | 驗證入口(seam) | | 測試從哪裡進去驗證行為的位置,不用改該處程式就能換掉行為。 | 邊界 |

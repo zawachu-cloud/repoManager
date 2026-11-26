@@ -16,8 +16,8 @@
   | `/close-session` | 收尾檢查:未辦事項 → git 是否乾淨 → 本 session 動作與文件是否一致 → 清理暫存。 |
   | `/check-repo` | 檢查指定目錄是否符合 repo 標準(結構 + 收尾規範)。 |
   | `/recall` | 語意搜尋過去的對話存檔與 OBSERVATIONS(本地 Ollama)。(全域 skill,在 `~/.kiro/skills/`) |
-| `/pipeline` | orchestrator(總架構師)釐清需求並拆解,視情況派 plan 規劃,code 以 TDD 實作,中型以上派 plan 審查,aux 補文件,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
-| `/improve-codebase-architecture` | orchestrator 派 plan 掃描 codebase,找出可加深或整併的模組並產出 Markdown 報告,zawa 挑一項後追問到決策清楚,再交給 `/pipeline` 實作。只在明確要求時用,不改程式碼。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+| `/pipeline` | orchestrator(總架構師)釐清需求並拆解,視情況派 planner 規劃,code 以 TDD 實作,中型以上派 planner 審查,aux 補文件,各階段走各自 model。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
+| `/improve-codebase-architecture` | orchestrator 派 planner 掃描 codebase,找出可加深或整併的模組並產出 Markdown 報告,zawa 挑一項後追問到決策清楚,再交給 `/pipeline` 實作。只在明確要求時用,不改程式碼。先 `/agent orchestrator` 再用。(全域 skill,在 `~/.kiro/skills/`) |
 - **templates/**:新 repo 用的範本檔(AGENTS.md、firstTask.md、.gitignore、.env.example、docs/README、`.kiro/agents/`、`.kiro/skills/{pipeline,recall,improve-codebase-architecture}/`)。
 - **context 系統**(`rules/`、`contexts/memory/`):讓 AI 在每個 repo 都知道 zawa 是誰、以前決定過什麼。`rules/` 是全域規則(symlink 到 `~/.kiro/steering/`,每個 session 自動載入);`contexts/memory/OBSERVATIONS.md` 是按需 grep 的觀察紀錄。設計、機密處理與分階段計畫見 **`docs/context-system.md`**。
 
@@ -44,7 +44,7 @@ repoManager/
 │   ├── gitignore                  # 複製到新 repo 時改名為 .gitignore
 │   ├── env.example                # 複製到新 repo 時改名為 .env.example
 │   ├── docs/{README,glossary}.md  # glossary 為名詞表範本
-│   ├── .kiro/agents/              # agent 備份(plan/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
+│   ├── .kiro/agents/              # agent 備份(plan/planner/code/aux/orchestrator/heartbeat),來源是 ~/.kiro/;另含 code-lab.json(拋棄式測試庫用範本,來源是 templates,見 docs §5b)
 │   └── .kiro/skills/{pipeline,recall,improve-codebase-architecture}/  # 全域 skill 備份,來源是 ~/.kiro/
 ├── scripts/
 │   ├── sync-kiro.sh               # 把 ~/.kiro/ 的 agent 與 pipeline skill 同步回 templates/.kiro/

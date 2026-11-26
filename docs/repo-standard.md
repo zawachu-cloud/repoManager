@@ -66,13 +66,14 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 | agent | model | 負責 | 快捷鍵 |
 |-------|-------|------|--------|
-| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;pipeline 中當子項目架構師(寫檔限 docs/、firstTask.md、tmp/、*.md) | `ctrl+shift+p` |
+| `plan` | `claude-opus-5.5` | 規劃、拆解、架構決策;互動用(`/agent plan`)。寫檔限 docs/、firstTask.md、tmp/、*.md | `ctrl+shift+p` |
+| `planner` | `claude-opus-5.5` | 與 `plan` 同內容,供 orchestrator 派工(pipeline 的子項目架構師與審查);`plan` 與 Kiro 內建 subagent 名稱衝突,派不出去,故另設 | — |
 | `code` | `claude-sonnet-5.5` | 實作、改碼、重構、跑建置與測試 | `ctrl+shift+c` |
 | `aux` | `claude-haiku-5.5` | 分析 log、寫文件等輔助工作。pipeline 不派它寫測試(測試由 `code` 先寫);`doc` 階段改用 sonnet,見 §5a | `ctrl+shift+u` |
 
 **存放與同步**:
 
-- **全域** `~/.kiro/agents/{plan,code,aux,orchestrator}.json`、`~/.kiro/skills/{pipeline,recall,improve-codebase-architecture}/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
+- **全域** `~/.kiro/agents/{plan,planner,code,aux,orchestrator}.json`、`~/.kiro/skills/{pipeline,recall,improve-codebase-architecture}/` → **唯一維護處**。所有 repo(含 repoManager)的 session 都直接用這份,改一次全部生效。
 - **備份** `templates/.kiro/` → `~/.kiro/` 不在版控,改完執行 `scripts/sync-kiro.sh` 複製回來並 commit。換機器時反向複製到 `~/.kiro/` 即可還原。
 - **本地覆蓋** → 只有某 repo 需要跟全域不同(例如換 model)時,才在該 repo 放同名 `.kiro/agents/<name>.json`。本地同名檔會覆蓋全域,之後改全域不會影響它,沒必要就不要放。
 
@@ -85,24 +86,24 @@ zawa 說「close session / 收工 / 結束這個 session」時,依序:
 
 ### 5a. 自動化 pipeline(orchestrator + /pipeline)
 
-orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細部規劃視情況派 `plan`(子項目架構師),實作與收尾派 `code` / `aux`。目的是讓 zawa 能直接跟 orchestrator 對話,同時把吃 token 的細部規劃隔離在 subagent,控制 orchestrator 的 context。
+orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細部規劃視情況派 `planner`(子項目架構師),實作與收尾派 `code` / `aux`。目的是讓 zawa 能直接跟 orchestrator 對話,同時把吃 token 的細部規劃隔離在 subagent,控制 orchestrator 的 context。
 
-- **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[plan,code,aux]`、`trustedAgents=[plan,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
-- **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟 zawa 確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `plan`,小項目自己規劃。
+- **`orchestrator` agent**:model `claude-opus-5.5`,`tools` 含 `subagent` 與 `write`(限 `docs/**`、`tmp/**`、`firstTask.md`、`*.md`),`crew.availableAgents=[planner,code,aux]`、`trustedAgents=[planner,code,aux]`(spawn 不跳核可)。在 `~/.kiro/agents/`。
+- **分工**:orchestrator 自己做整體拆解、子項目介面與相依、跟 zawa 確認、整合;子項目邊界清楚且要讀大量程式碼 / 文件時才派 `planner`,小項目自己規劃。
 - **大量 log**(單檔約 2000 行以上或多份):orchestrator 不整份讀,先派 `aux` 篩出錯誤段落、時間線、可疑點寫進 `tmp/log-<主題>.md`,只回摘要與證據位置(檔名:行號);orchestrator 依摘要跟 zawa 討論,需要時只讀特定段落。一般大小的 log 自己讀。
-- **`pipeline` skill**:`/pipeline <任務>` → 釐清需求並拆解(垂直切、判斷規模)→ 規劃子項目(自己或派 plan,可並行,依 `plan-template.md`)→ `code` 以 TDD 實作(先寫測試,規則在 `tdd.md`)→ 中型以上派 `plan` 審查(只讀不改,寫 `tmp/review-<子項目>.md`)→ `doc`。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。流程細節見 SKILL.md,部分作法改寫自 mattpocock/skills(MIT,見 `NOTICE.md`)。在 `~/.kiro/skills/pipeline/`,備份在 `templates/.kiro/skills/pipeline/`。
+- **`pipeline` skill**:`/pipeline <任務>` → 釐清需求並拆解(垂直切、判斷規模)→ 規劃子項目(自己或派 planner,可並行,依 `plan-template.md`)→ `code` 以 TDD 實作(先寫測試,規則在 `tdd.md`)→ 中型以上派 `planner` 審查(只讀不改,寫 `tmp/review-<子項目>.md`)→ `doc`。`doc` 階段用 `aux` 角色但 model 覆蓋為 `claude-sonnet-5.5`(文件品質比 haiku 好,成本低於 opus)。流程細節見 SKILL.md,部分作法改寫自 mattpocock/skills(MIT,見 `NOTICE.md`)。在 `~/.kiro/skills/pipeline/`,備份在 `templates/.kiro/skills/pipeline/`。
 
 **用法**:`/agent orchestrator` → 直接討論,或 `/pipeline <要做的任務>`。
 
-- 有需要 zawa 決定的選項時(orchestrator 拆解時,或 plan 回報時),會先停下來問;zawa**直接回覆**即可接續,不用再打 `/pipeline`。
-- 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的部分,子項目計畫小改自己改,大改重派 plan。
-- 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。plan 回報只給「摘要」與「需要 zawa 決定」兩段,完整計畫留在檔案裡。
+- 有需要 zawa 決定的選項時(orchestrator 拆解時,或 planner 回報時),會先停下來問;zawa**直接回覆**即可接續,不用再打 `/pipeline`。
+- 跑完後回覆修改意見,也是直接回覆;orchestrator 只重跑需要的部分,子項目計畫小改自己改,大改重派 planner。
+- 每個子項目的計畫寫在 `tmp/plan-<子項目>.md`(不進版控)。planner 回報只給「摘要」與「需要 zawa 決定」兩段,完整計畫留在檔案裡。
 - **計畫存檔**:中型以上任務完成後,`doc` 階段把計畫的「問題」「解法」「實作決定」「不做的範圍」存進該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(狀態「已完成」,不開 branch);小型任務不存。細節見 pipeline SKILL.md 第 5 步。
 
 **注意**:
 
-- 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
-- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
+- 必須從**有 subagent 工具**的 agent 發動(`orchestrator` 或內建 default);`plan`/`planner`/`code`/`aux` 本身不含 subagent 工具,不能當發動點。
+- `code`/`aux` 已把 `write`/`shell` 列入 `allowedTools`(免提示),`plan`、`planner`、`orchestrator` 僅放行 `write`(限 `docs/`、`tmp/`、`*.md`);搭配 `orchestrator` 的 `trustedAgents`,pipeline **全程不跳核可,無需 `/tools trust-all`**。
 - 安全網:`code`/`aux` 的 `shell.deniedCommands` 擋下破壞性指令(`rm -rf`、`git reset --hard`、force push、`git clean -f`、`sudo`、`mkfs`、`dd if=`、關機、`chmod -R 777`、寫入 `/dev/sd`、SQL `DROP/TRUNCATE`),這些仍會被拒,符合「破壞性動作先確認」。此清單為 best-effort,無法涵蓋所有危險寫法。
 - 要臨時改某階段 model,可在該 stage 加 `model` 覆蓋 role 預設。
 

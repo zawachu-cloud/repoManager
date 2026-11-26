@@ -8,7 +8,7 @@ SRC="${HOME}/.kiro"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DST="${REPO_ROOT}/templates/.kiro"
 
-AGENTS=(plan code aux orchestrator heartbeat)
+AGENTS=(plan planner code aux orchestrator heartbeat)
 SKILLS=(pipeline recall improve-codebase-architecture)
 
 mkdir -p "${DST}/agents" "${DST}/skills"

@@ -12,7 +12,7 @@
 
 ### L3 怎麼生效
 
-`scripts/link-rules.sh` 把 `rules/*.md` symlink 到 `~/.kiro/steering/`。Kiro 的 `kiro_default` 會載入 `~/.kiro/steering/**/*.md`,自建 agent(`plan`/`code`/`aux`/`orchestrator`)預設也會繼承。
+`scripts/link-rules.sh` 把 `rules/*.md` symlink 到 `~/.kiro/steering/`。Kiro 的 `kiro_default` 會載入 `~/.kiro/steering/**/*.md`,自建 agent(`plan`/`planner`/`code`/`aux`/`orchestrator`)預設也會繼承。
 已驗證(2026-11-18):從 `/tmp` 用 default agent、從 `~/proj/my/stocktake` 用 `code` agent,都讀得到 `USER.md`。
 
 - 改規則:直接改 `rules/*.md`,symlink 讓下一個 session 立刻生效,不需要 sync。

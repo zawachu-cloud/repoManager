@@ -70,7 +70,7 @@ touch <目錄>/.env <目錄>/tmp/.gitkeep
 
 ## 4b. (可選)帶入 model routing agent 與 pipeline
 
-model routing 的 `plan` / `code` / `aux` / `orchestrator` 角色 agent,與 `pipeline` skill 已放**全域**(`~/.kiro/agents/`、`~/.kiro/skills/`),新 repo 的 session **自動可用**,通常不需額外動作。
+model routing 的 `plan` / `planner` / `code` / `aux` / `orchestrator` 角色 agent,與 `pipeline` skill 已放**全域**(`~/.kiro/agents/`、`~/.kiro/skills/`),新 repo 的 session **自動可用**,通常不需額外動作。
 
 只有在這個 repo 要**本地覆蓋**(例如換某角色 model、或把設定隨 repo 進版控)時,才複製範本到本地:
 ```bash
