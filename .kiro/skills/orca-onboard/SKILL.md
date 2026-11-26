@@ -73,16 +73,16 @@ for w in ~/orca/workspaces/<repo>/*/; do bash ~/.config/<repo>/orca-setup.sh "$w
 
 ## 6. 設 orca hook(zawa 手動,CLI 不支援)
 
-orca CLI **沒有**設 setup/hook 腳本的命令(`orca repo set` 只管 worktree 可見性與 browser profile);那段 `hookSettings.scripts` 存在 orca 背景程式用的 `profile-state.db`,**不要直接改**(有被覆蓋/改壞風險)。請 zawa 到 orca UI 的該專案設定,把下面兩行填進 setup / archive:
+orca CLI **沒有**設 setup/hook 腳本的命令(`orca repo set` 只管 worktree 可見性與 browser profile);那段 `hookSettings.scripts` 存在 orca 背景程式用的 `profile-state.db`,**不要直接改**(有被覆蓋/改壞風險)。請 zawa 到 orca UI 的該專案設定,把下面這行填進 **setup**:
 
 ```
-setup:   bash ~/.config/<repo>/orca-setup.sh "$ORCA_WORKTREE_PATH"
-archive: bash ~/.config/<repo>/orca-setup.sh
+setup: bash ~/.config/<repo>/orca-setup.sh "$ORCA_WORKTREE_PATH"
 ```
+> 只設 setup 即可。archive 不用設:`orca-setup.sh` 只建 symlink、不刪東西,worktree 被收時 symlink(指向 `~/.config/<repo>/`,非實體機密)自然消失,所以 archive 跑這支是 no-op。
 > 設好後,之後每次開該專案的 workspace 都會自動帶機密,不用再手動跑步驟 5。
 
 ## 7. 收尾提示
 
 - 列出實際做了什麼:`~/.config/<repo>/` 內容、來源哪些檔變成 symlink、對哪些 worktree link 了。
-- 把步驟 6 的兩行再貼一次,提醒 zawa 去 orca UI 設(這是唯一還要手動的一步)。
+- 把步驟 6 的 setup 那行再貼一次,提醒 zawa 去 orca UI 設(這是唯一還要手動的一步;archive 不用設)。
 - 驗證:在一個 worktree `ls -la .env` 應指向 `~/.config/<repo>/.env`,且 `git status` 乾淨(機密被 ignore)。
