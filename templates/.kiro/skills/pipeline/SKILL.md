@@ -1,6 +1,6 @@
 ---
 name: pipeline
-description: orchestrator(總架構師,opus)釐清需求並拆解,自己寫或派 plan 產出計畫,code 以 TDD 實作(先寫測試),中型以上任務派 plan 審查,aux 補文件,各階段走各自 model。用法:先 /agent orchestrator,再 /pipeline <要做的任務>。
+description: orchestrator(總架構師,opus)釐清需求並拆解,自己寫或派 plan 產出計畫,code 以 TDD 實作(先寫測試),中型以上任務派 plan 審查,aux 補文件,各階段走各自 model。用法:先 /agent orchestrator,再 /pipeline <要做的任務>;多個任務用 /pipeline 批次做 <任務 A、B、C>(一輪問完後不再互動)。
 ---
 
 # 釐清 → 規劃 → code(TDD)→ 審查 → 文件 pipeline
@@ -25,6 +25,7 @@ zawa 要做的任務:$ARGUMENTS
 - `doc` stage 必須在 stage 參數帶 `"model": "claude-sonnet-5.5"`。
 - 都用 **subagent** 工具,`mode=blocking`。
 - 只有一個子項目時,stage 名稱可省略 `-<子項目>`。
+- 環境沒有 `plan` subagent 時:規劃自己做;審查改派 `code` 唯讀執行(只准寫 `tmp/review-<子項目>.md`,不改程式、不 commit)。
 - 模板與規則在本 skill 同目錄:`plan-template.md`(計畫檔格式)、`tdd.md`(code 的測試規則)。派 subagent 時一律寫絕對路徑 `~/.kiro/skills/pipeline/plan-template.md`、`~/.kiro/skills/pipeline/tdd.md`(若 repo 有本地覆蓋的 `.kiro/skills/pipeline/`,改用該路徑)。
 
 ## 流程
@@ -105,6 +106,19 @@ prompt 要帶計畫檔路徑、`tdd.md` 路徑、zawa 的決定。規則摘要(�
 - 同一任務的多個子項目合併成一份。檔案已存在不覆蓋,改用新 slug。小型任務不存。
 
 所有 stage 都要求只回精簡摘要。跑完整合各子項目結果回報 zawa。任一階段失敗會 fail-fast,立刻回報錯誤與建議的處理方式。
+
+## 批次模式
+
+zawa 一次給多個任務時使用(例如「`/pipeline 批次做 A、B、C`」),目的是一輪問完,之後不用再互動。每個任務仍照第 1~5 步走,只改下面幾點:
+
+1. **開頭一次問完**:先讀完所有任務,把各任務第 1 步的待決事項合成一輪問題(題數可超過 5,依任務分組編號)。zawa 回覆後全程不再停。
+2. **分流**(在同一輪問題中列出,讓 zawa 一起確認):
+   - 可直接跑:沒有待決,或待決已在本輪問完。
+   - 不適合批次:大型、高風險(碰 RLS / 權限、大量資料模組、改部署方式)→ 建議單獨開 session,不納入本批。
+3. **順序與並行**:會改到同一檔或同一模組的任務依序做,其餘可並行。每個任務各自完成測試、上線與版號(repo 有例行部署授權時),出問題才能分辨是哪一項。
+4. **中途出現新待決**:該任務停在當下的步驟並記下狀態,繼續做下一個,不讓整批停下。任一任務失敗也照此處理,不 fail-fast 整批。
+5. **context 上限**:約做完 5 個中型任務,或 context 明顯變長時,停在任務之間,回報進度並附下個 session 可直接貼的 prompt(含已完成項目、擱置項目與狀態)。
+6. **最後回報**:每個任務一列(版本 / 測試結果 / 狀態),接著是擱置項目,最後是需要 zawa 決定的事(編號列出)。
 
 ## 跑完後 zawa 回覆修改意見
 
