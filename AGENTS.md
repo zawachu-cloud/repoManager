@@ -37,7 +37,7 @@ repoManager/
 │   └── COMMUNICATION.md           # 溝通風格
 ├── contexts/memory/
 │   ├── OBSERVATIONS.md            # L1/L2 觀察紀錄(按需 grep,不整份讀)
-│   └── pending-review.md          # reflector 提出、待 zawa 核准的規則候選
+│   └── pending-review.md          # reflector 提出、待 zawa 決定的規則候選與問題
 ├── templates/                     # 新 repo 範本(由 create-repo 複製 / 參考)
 │   ├── AGENTS.md
 │   ├── firstTask.md
