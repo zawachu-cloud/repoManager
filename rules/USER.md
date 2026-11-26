@@ -36,6 +36,7 @@
 ## 工作偏好(已確認)
 
 - commit / push 由 AI 直接做,不用問。
+- 在 branch 上做的工作若簡單且已完成(測試全綠、合進 main/master 無衝突),直接合進預設 branch 並上版,不用問:不 checkout main 也不 force,用 fast-forward 或 merge 後 `git push origin HEAD:<預設 branch>`;有版號的 repo 打 annotated tag `v<版號>` 並 push。合併有衝突、或需要 zawa 決定的變更才停下來問。
 - 破壞性動作(`rm -rf`、`reset --hard`、force push、覆蓋既有檔)先確認。
 - 機密只放 `.env`;備份敏感檔用 `age` 加密。
 - 文件分層省 token:AGENTS.md 只放摘要,細節放 `docs/`,同一件事只寫一處。
