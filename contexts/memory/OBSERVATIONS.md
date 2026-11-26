@@ -99,3 +99,20 @@ Date: 2026-11-26
 🟡 Medium: [待辦] 專案搬到 ~/orca/projects 延後:zawa 要先用 orca 2~3 週再決定,期間不動作。現況 repoManager 有兩份 clone(~/proj/my/repoManager 是 cron 使用,~/orca/projects/repoManager 是 orca 使用),都推同一個 main;文件與腳本仍有多處寫死 ~/proj/my。
 
 🟡 Medium: [偏好] 提議拆檔時要明說原因是檔案太大(目前行數與超過的門檻),否則 zawa 不知道為什麼要拆。已寫進 rules/USER.md。
+
+Date: 2026-11-26
+
+🔴 High: [發現] Kiro 派 subagent 時,父 agent(如 orchestrator)與子 agent 兩層的 shell deny 規則同時檢查,任一層命中就擋,來源分別標 agent-profile 與 subagent-profile。lab repo 要放行 DROP,得另放本地 orchestrator.json 拿掉 DROP/TRUNCATE(dbUpgrade 已實測有效,見 docs/repo-standard.md §5b)。
+🟡 Medium: [決策] orchestrator.json 補一條 shell allow 並搬入 code/aux 的 deny 清單,解決每次派 subagent 都跳批准提示。選 (f) 只對當前 session 有效。deny 優先於 allow,orchestrator 自己沒有 shell 工具,不受影響。
+🟡 Medium: [決策] orca 本機機密檔:每個 repo 一份 ~/.config/<repo>/ 當單一來源,放通用 orca-setup.sh,在 orca UI 的 setup/archive hook 填命令。orca CLI 無法設 hook。hr、stocktake、ansible、psapi-dotnet 都已套用。新增 /orca-onboard skill,舊 repo 的原檔換成 symlink。專案要用「開啟既有 repo」或 clone 加入,不要用「建立新專案」。
+🟡 Medium: [決策] hr 與 stocktake 是各自獨立的 Supabase 專案,同名 .env key 的值不同,不合併。只有同一帳號共用的憑證(如 Jira)才抽成 ~/.config/<名稱>/ 共用,避免連錯庫。
+🟡 Medium: [決策] psapi-dotnet 的 token-in-log 單:zawa 決定不遮 access_token,因為線上排查要拿營運商給的 token 比對 log。只有 password 類不得以原值入 log。已寫進該 repo AGENTS.md 的「Log 去敏政策」,等安全部門提出再處理。
+🟡 Medium: [專案狀態] psapi-dotnet 錯誤碼寫死數字已改成 3 個 enum(HostApiErrorCode、HostErrorLogAction、HostErrorLogCode),新增掃描測試防再寫死,數值與行為不變。v1.4.23 之後累積 6 個未發版 commit,下次發版要整理 release note。
+🟡 Medium: [發現] ansible 的 DB migration 有共通缺陷:版本號在套件或 SQL 檢查前就寫入,SQL 缺檔時版本表仍記已套用。jp 與 gameapi server 已改成檢查通過後才寫版本;backstage、gameapi 的 migration 仍有同寫法,待修。jp 的 DB 密碼檔放 ~/.config/ansible,不進版控。
+🟡 Medium: [發現] gameapi 的 systemd 範本把 ASPNETCORE_ENVIRONMENT 寫死 Development,三個環境共用,所以 prod 也開 swagger 並回傳例外細節。決定全面移除 swagger。部署健康檢查要先改打 /Version,且 ansible 要比新 tag 先上。prod LB 與監控是否打 /swagger 要先問維運。
+🟡 Medium: [專案狀態] hr v1.27.1 上線(repo 第一個 tag),是 /improve-codebase-architecture 首次實跑:掃出 9 項,先做薪資前處理共用。排班預估改與實際產薪走同一段,含到職折算與請假扣款,不含離職結清、季獎金、12 月國定假日加倍。其餘 7 項待排,最大的是資料存取層無測試。
+🟡 Medium: [專案狀態] hr 記帳:LINE Pay 入帳日依結算單比對,規則是交易日後第 2 個銀行營業日(不是日曆 +2),併入自動扣手續費勾選框。v1.25.4 把類別欄改成選收入/支出,新增後保留方向、管道、日期,方便連續記帳。
+🟡 Medium: [偏好] zawa 看不懂用日期、編號指稱筆記的整理項目。需要他決定的事要寫成白話問題;合併重複筆記這類 AI 能自己決定的維護,直接做,不列合併清單。
+🟢 Low: [專案狀態] repoManager 的 heartbeat.py 超過 400 行,已拆成三個檔(各約 120~200 行),28 項測試通過。週三回顧現在同時讀 ~/orca/projects 與 ~/proj/my。
+🟢 Low: [發現] psapi-dotnet 的 GetHostGameInfo 快取 key 含 access_token,命中率低,且回應含玩家注單號卻允許中間層快取 60 秒。RD01-7178 的建議是拆兩段快取並改 private,待 zawa 確認。
+🟢 Low: [發現] psapi-dotnet 簽章規劃發現兩個實作風險:BaseRequest.ToString() 不做 URL 編碼,HostApi 的 HttpClient 開著自動轉址。開 sign_enable 的 host 要處理這兩點。
