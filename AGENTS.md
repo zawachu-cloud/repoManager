@@ -37,7 +37,7 @@ repoManager/
 │   └── COMMUNICATION.md           # 溝通風格
 ├── contexts/memory/
 │   ├── OBSERVATIONS.md            # L1/L2 觀察紀錄(按需 grep,不整份讀)
-│   └── pending-review.md          # reflector 提出、待 zawa 核准的規則候選
+│   └── pending-review.md          # reflector 提出、待 zawa 決定的規則候選與問題
 ├── templates/                     # 新 repo 範本(由 create-repo 複製 / 參考)
 │   ├── AGENTS.md
 │   ├── firstTask.md
@@ -51,7 +51,10 @@ repoManager/
 │   ├── session-export.sh          # 對話匯出:cron 每天 12:30 全部增量+加密備份;--current 給 /close-session
 │   ├── session_archive.py         # 存檔 age 加密備份 / 還原(→ private_session_data)
 │   ├── semantic_search.py         # 本地語意搜尋(Ollama):index / query,給 /recall 用
-│   ├── heartbeat.py               # 自動記憶:observe(每日)/ reflect(週三),用唯讀 heartbeat agent
+│   ├── heartbeat.py               # 自動記憶入口:observe(每日)/ reflect(週三),用唯讀 heartbeat agent
+│   ├── heartbeat_common.py        # heartbeat 共用:路徑、狀態、kiro 執行、gitleaks、commit
+│   ├── heartbeat_reflect.py       # weekly reflector(heartbeat.py reflect 的實作)
+│   ├── heartbeat_merge.py         # reflector 的純函式:整理與合併重複筆記
 │   └── link-rules.sh              # 把 rules/*.md symlink 到 ~/.kiro/steering/(換機器跑一次)
 ├── .kiro/skills/
 │   ├── create-repo/SKILL.md

@@ -158,14 +158,19 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 | 元件 | 內容 |
 |------|------|
 | `scripts/heartbeat.py observe` | 每天 12:30(接在 `session-export.sh` 最後)。挑出大小有變的存檔(新 session 或續聊),一次最多 40 個,交給 Kiro 寫 🔴🟡🟢,追加到 `OBSERVATIONS.md` 並 commit。失敗不推進狀態,下次重試同一批。 |
-| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md **直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 規則候選與記憶合併建議寫進 `contexts/memory/pending-review.md`,**zawa 核准才套用**。 |
+| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md(repo 位於 `~/orca/projects/` 與 `~/proj/my/` 兩處)**直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 產出規則候選與問題寫進 `contexts/memory/pending-review.md`,並直接合併重複筆記(細節見下方)。 |
 | Kiro agent `heartbeat` | `~/.kiro/agents/heartbeat.json`(sonnet-5.5),只有 read/grep/glob,**不能寫檔或執行指令**(已實測)。結果印在標記之間,由腳本驗證格式 → 遮罩 → gitleaks → 寫檔 → 只 commit 碰到的檔。 |
+| 程式檔案 | `heartbeat.py`(入口與 observe)、`heartbeat_reflect.py`(reflect)、`heartbeat_common.py`(路徑、狀態、kiro 執行、gitleaks、commit)、`heartbeat_merge.py`(純函式:整理與合併重複筆記)。 |
 | 不回灌 | heartbeat 的 Kiro session 在 `~/.local/share/ai-heartbeat/` 執行,匯出時用 `--kiro-exclude-cwd` 排除,不會變成下一輪的觀察來源。 |
 | 狀態 / log | `~/.local/share/ai-heartbeat/state.json`(各存檔上次觀察時的大小)、`last-obs.log`、`last-reflect.log`、`cron.log`。 |
 
+- reflect 的輸出分三類,各自的處理方式不同:
+  - **規則候選**:寫進 `pending-review.md`,每則附一行白話「影響」(套用後 AI 的哪個行為會改變),**zawa 核准才套用**到 `rules/`。
+  - **重複筆記合併**:不列在 `pending-review.md`。agent 在 `merges` 欄位輸出「要取代的原行」與「合併後的一行」,腳本驗證後直接改寫 `OBSERVATIONS.md`,合併後的行放在被合併條目中最早那則的位置,其餘刪除。驗證:原行必須逐字存在;新行符合觀察格式(`🔴/🟡/🟢 High|Medium|Low: [標籤] 描述`);遮罩後不含 `[REDACTED]`;通過 gitleaks。任一項不符就略過那則。
+  - **問題**:需要 zawa 提供的事實,用白話問句寫進 `pending-review.md`。zawa 回覆後,AI 處理並打勾或刪除。
 - 判斷變動用檔案大小,不用 mtime:`--full` 重匯會讓所有檔 mtime 變新,但內容一樣。第一次執行時,昨天以前的存檔一律當作已看過(歷史用 `/recall` 查)。
 - Kiro 服務偶爾在回應中途失敗(`dispatch failure`),`run_kiro` 會等 60 秒重試一次。
-- 首次執行(2026-11-19):observer 寫入 15 則;reflector 補了 9 個專案行,提出 4 則規則候選、5 則記憶整理。
+- 首次執行(2026-11-19):observer 寫入 15 則;reflector 補了 9 個專案行,提出 4 則規則候選、5 則記憶整理(當時列在 pending-review,現改為直接合併)。
 
 ## 5. 分階段計畫
 
