@@ -35,7 +35,7 @@ semantic-search-skill 建索引(本地 Ollama qwen3-embedding:4b;快取在本機
   │
   ▼
 observer(每日)→ OBSERVATIONS.md 追加 L1
-reflector(每週)→ 整理 L1/L2,提出 rules/ 候選 → zawa 核准才合入
+reflector(每週)→ 直接合併 L1/L2 重複筆記,提出 rules/ 候選 → zawa 核准才合入
 ```
 
 ### 2b. USER.md「目前的專案」的更新時機
