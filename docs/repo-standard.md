@@ -123,5 +123,5 @@ orchestrator 當總架構師(opus),直接跟 zawa 討論與規劃;子項目細�
 orca 開 workspace 用 git worktree,`.env` 等不進版控的本機機密不會跟著進來。做法:機密集中到 `~/.config/<repo>/`(單一來源)+ 通用 `orca-setup.sh`(範本在 `templates/`),由 orca 在開/收 workspace 時跑它,symlink 進該 worktree。
 
 - 既有 repo 接上這套:用 `/orca-onboard`(細節見該 skill)。hr、ansible、psapi-dotnet、stocktake 都是這套。
-- **orca hook 只能手動設**:orca CLI 無設 hook 腳本的命令,`profile-state.db` 也別直接改。到 orca UI 該專案填 setup=`bash ~/.config/<repo>/orca-setup.sh "$ORCA_WORKTREE_PATH"`、archive=`bash ~/.config/<repo>/orca-setup.sh`。
+- **orca hook 只能手動設**:orca CLI 無設 hook 腳本的命令,`profile-state.db` 也別直接改。到 orca UI 該專案填 setup=`bash ~/.config/<repo>/orca-setup.sh "$ORCA_WORKTREE_PATH"`;archive 不用設(腳本只建 symlink、不刪東西,為 no-op)。
 - 只收機密來源檔(`.env*`),不收衍生檔(如由腳本產生的 `config.js`)與 `tmp/`。
