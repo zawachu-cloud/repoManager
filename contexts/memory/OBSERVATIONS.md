@@ -95,3 +95,7 @@ Date: 2026-11-26
 🟡 Medium: [決策] /pipeline 中型以上任務完成後,doc 階段把計畫的「問題」「解法」「實作決定」「不做的範圍」四段存進該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(狀態「已完成」,不開 branch);「實作提示」不存,小型任務不存。close session 刪 `plan-*` 前要確認已存檔。理由:tmp/ 的計畫檔會被清掉,決策與取捨需要留在版控。
 
 🟢 Low: [決策] mattpocock to-spec 的完整情境清單與 prior art 欄位評估過,zawa 決定先不加進 plan-template.md,之後有需要再議。
+
+🟡 Medium: [待辦] 專案搬到 ~/orca/projects 延後:zawa 要先用 orca 2~3 週再決定,期間不動作。現況 repoManager 有兩份 clone(~/proj/my/repoManager 是 cron 使用,~/orca/projects/repoManager 是 orca 使用),都推同一個 main;文件與腳本仍有多處寫死 ~/proj/my。
+
+🟡 Medium: [偏好] 提議拆檔時要明說原因是檔案太大(目前行數與超過的門檻),否則 zawa 不知道為什麼要拆。已寫進 rules/USER.md。

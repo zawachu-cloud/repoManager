@@ -41,7 +41,7 @@
 - 文件分層省 token:AGENTS.md 只放摘要,細節放 `docs/`,同一件事只寫一處。
 - 不熟的技術(例如 embedding)希望先用白話解釋原理與代價,再做決定。
 - DB schema 變更一律 additive(`add column/table if not exists`),不對線上欄位或資料做 drop、破壞性 alter 或覆蓋;被取代的欄位保留並標 DEPRECATED。
-- 程式碼檔案軟上限約 300 行,到 400 行主動提拆分,硬上限 500 行(barrel、自動產生檔、測試除外),目的是省 token。新功能優先放新模組,不往大檔追加。
+- 程式碼檔案軟上限約 300 行,到 400 行主動提拆分(提的時候說明原因:檔案太大,目前幾行、超過哪個門檻),硬上限 500 行(barrel、自動產生檔、測試除外),目的是省 token。新功能優先放新模組,不往大檔追加。
 - 回覆 Jira 卡:送出前先給 zawa 看內容;內容精簡,只寫我們實作的內容與結論,不寫別人的待辦或與實作無關的事。
 - 開單(專案待辦,非 Jira):寫在該 repo 的 `docs/issues/[YYMMDD]<slug>.md`(repo 已有其他慣例時依 repo),狀態填「待確認」,先 commit 到預設 branch;同時開 branch `issue/<slug>`(slug 與檔名相同,英文小寫、`-` 分隔)並 push。
 
