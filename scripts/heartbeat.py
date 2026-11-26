@@ -38,11 +38,12 @@ PROJECTS_ROOT = HOME / "proj/my"
 FORK_SRC = HOME / "proj/my/ai_session_export/src"
 GITLEAKS_CONFIG = HOME / "proj/my/ai_session_export/.gitleaks.toml"
 RECORD_MARK = "<!-- 以下為記錄區,新條目追加在最後 -->"
-LINE_OK = re.compile(r"^(🔴 High|🟡 Medium|🟢 Low): \[[^\]]{1,20}\] .{4,400}$")
 GC_DAYS = 30
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 
 sys.path.insert(0, str(FORK_SRC))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from heartbeat_merge import LINE_OK, apply_merges, render_pending, tidy_body  # noqa: E402
 try:
     from ai_session_export.redact import redact  # noqa: E402
 except ImportError:  # pragma: no cover
@@ -234,9 +235,12 @@ REFLECT_PROMPT = """任務:L2 每週回顧。基準日期 {today}。
 {{
   "projects": {{"<repo 目錄名>": "<一行用途與目前方向,60 字以內>"}},
   "rule_candidates": [
-    {{"file": "USER.md|SOUL.md|COMMUNICATION.md", "section": "<要放的段落標題>", "text": "<建議新增或修改的那一行>", "reason": "<為什麼>", "evidence": "<依據:Date 或存檔檔名>"}}
+    {{"file": "USER.md|SOUL.md|COMMUNICATION.md", "section": "<要放的段落標題>", "text": "<建議新增或修改的那一行>", "impact": "<白話:這條規則在實際工作中會有什麼不同>", "reason": "<為什麼>", "evidence": "<依據:Date 或存檔檔名>"}}
   ],
-  "merge_suggestions": ["<哪幾則 🟡 可以合併或已過時,以及建議怎麼改>"]
+  "merges": [
+    {{"old": ["<OBSERVATIONS 記錄區的完整原行,逐字複製>", "..."], "new": "<合併後的一行,符合觀察行格式>"}}
+  ],
+  "questions": ["<需要 zawa 提供的事實,白話,一句話能回答>"]
 }}
 REFLECT>>>
 
@@ -244,7 +248,13 @@ REFLECT>>>
 - projects:只放 {projects_root} 下真的存在、而且你從存檔或 AGENTS.md 有依據的 repo。沒依據就不要放,不要猜。
   寫用途與方向,不寫憑證、IP、資料內容(姓名、薪資數字等)。目前的寫法:{current_projects}
 - rule_candidates:反覆出現(至少兩次)的偏好或做法,而且 USER/SOUL/COMMUNICATION 還沒寫到的才提。最多 5 則。沒有就給空陣列。
-- merge_suggestions:最多 5 則;沒有就空陣列。
+  impact 用白話寫,讓沒讀過 {obs} 的 zawa 也看得懂;不要用日期或 emoji 指稱筆記。
+- merges:腳本會直接套用到 {obs},最多 5 則;沒有就空陣列。
+  只合併講同一件事的重複條目,或已被取代的條目。
+  old 是 {obs} 記錄區的完整原行,必須逐字複製(含 emoji 與 [分類]);整行要存在才會套用。
+  new 是合併後的一行,格式同觀察行(🔴 High / 🟡 Medium / 🟢 Low: [分類] 描述,200 字以內);要保留仍有效的資訊,尤其是待決事項。
+  條目只是過時要刪除時,new 給空字串。
+- questions:需要 zawa 提供、你從存檔查不到的事實(例如某專案的路徑)。白話,一句話能回答;最多 3 則,沒有就空陣列。
 - 只輸出標記之間的 JSON,不要 markdown 程式碼框。
 """
 
@@ -267,10 +277,7 @@ def gc_low(body: str, today: date) -> tuple[str, int]:
             removed += 1
             continue
         out.append(line)
-    # drop Date headers left with no items
-    cleaned = re.sub(r"\nDate: \d{4}-\d{2}-\d{2}\n\n(?=\nDate: |\Z)", "\n", "".join(out))
-    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
-    return cleaned, removed
+    return tidy_body("".join(out)), removed
 
 
 PROJECT_SECTION = re.compile(r"(## 目前的專案\n(?:.*\n)*?\n)((?:- `[^`]+`:[^\n]*\n)+)")
@@ -304,6 +311,17 @@ def apply_projects(user_text: str, proposed: dict) -> tuple[str, list[str]]:
     return user_text[: match.start(2)] + block + user_text[match.end(2):], changed
 
 
+PENDING_HEADER = ("# 待 zawa 確認的記憶變更\n\n"
+                  "> 由每週三 reflector 產生,只放需要 zawa 決定的事:規則候選(會改變 AI 行為)與問題(需要 zawa 提供的事實)。"
+                  "重複筆記的合併由 reflector 直接做,不列在這裡。zawa 回覆後,AI 套用並打勾或刪除;沒處理的會一直留著。\n")
+
+
+def _changed_lines(old: str, new: str) -> list[str]:
+    """Lines present in new but not in old (what a merge introduced), for the gitleaks check."""
+    before = set(old.splitlines())
+    return [line for line in new.splitlines() if line.strip() and line not in before]
+
+
 def cmd_reflect(args: argparse.Namespace) -> int:
     today = date.today()
     if today.weekday() != 2 and not args.force:
@@ -334,38 +352,41 @@ def cmd_reflect(args: argparse.Namespace) -> int:
         touched.append(USER)
     log(f"USER.md 專案行更新:{changed or '無'}")
 
-    # 2. GC old 🟢 (deterministic)
+    # 2. OBSERVATIONS.md: GC old 🟢, then apply merges (one write)
     obs_text = OBS.read_text(encoding="utf-8")
     head, body = record_region(obs_text)
-    new_body, removed = gc_low(body, today)
-    if removed:
+    gc_body, removed = gc_low(body, today)
+    log(f"清掉 {removed} 則超過 {GC_DAYS} 天的 🟢")
+    merges = result.get("merges") or []
+    if not isinstance(merges, list):
+        merges = []
+    new_body, applied, skipped = apply_merges(gc_body, merges[:5], redact)
+    for reason in skipped:
+        log(f"略過一則合併:{reason}")
+    if applied and not gitleaks_clean("\n".join(_changed_lines(gc_body, new_body))):
+        log("gitleaks 在合併結果裡有命中,整批合併不套用")
+        new_body, applied = gc_body, 0
+    log(f"{'會套用' if args.dry_run else '套用'}合併 {applied} 則(略過 {len(skipped)} 則)")
+    if removed or applied:
         if not args.dry_run:
             OBS.write_text(head + new_body, encoding="utf-8")
         touched.append(OBS)
-    log(f"清掉 {removed} 則超過 {GC_DAYS} 天的 🟢")
 
-    # 3. candidates for the boss to approve
+    # 3. pending-review: rule candidates and questions for zawa
     cands = [c for c in result.get("rule_candidates") or [] if isinstance(c, dict) and c.get("text")][:5]
-    merges = [str(m) for m in result.get("merge_suggestions") or []][:5]
-    if cands or merges:
-        parts = [f"\n## {today.isoformat()} 週三回顧\n"]
-        for c in cands:
-            parts.append(f"- [ ] **規則候選** → `rules/{c.get('file', '?')}` §{c.get('section', '?')}:{c['text']}\n"
-                         f"  - 理由:{c.get('reason', '')}(依據:{c.get('evidence', '')})\n")
-        for m in merges:
-            parts.append(f"- [ ] **記憶整理**:{m}\n")
-        section = redact("".join(parts))
+    questions = [str(q).strip() for q in result.get("questions") or [] if str(q).strip()][:3]
+    section = redact(render_pending(today.isoformat(), cands, questions))
+    if section:
         if gitleaks_clean(section):
             if not args.dry_run:
                 if not PENDING.exists():
-                    PENDING.write_text("# 待 zawa 確認的記憶變更\n\n> 由每週三 reflector 產生。zawa 同意哪幾項,就請 AI 套用到 `rules/` 或 `OBSERVATIONS.md`,"
-                                       "然後把該項打勾或刪除。沒處理的會一直留著。\n", encoding="utf-8")
+                    PENDING.write_text(PENDING_HEADER, encoding="utf-8")
                 with PENDING.open("a", encoding="utf-8") as handle:
                     handle.write(section)
             touched.append(PENDING)
         if args.dry_run:
             print(section)
-    log(f"候選:規則 {len(cands)} 則、記憶整理 {len(merges)} 則")
+    log(f"待確認:規則候選 {len(cands)} 則、問題 {len(questions)} 則")
 
     commit(touched, f"memory: reflector {today.isoformat()}", args.dry_run)
     return 0
