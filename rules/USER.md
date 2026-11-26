@@ -28,7 +28,7 @@
 - `stocktake`:店員用手機盤點庫存並預估可用天數。獨立 Supabase,盤點保留 3 年(pg_cron 每月清理,已上線)。
 - `innerDoc`:公司人事表單(試用期、離職、資遣、招募)的 Markdown 原始檔與 PDF 轉出,改 md 再轉檔。
 - `modelRouting`:<待補>
-- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)、plan/code/aux model routing 與 shell 權限規則。近期:週三回顧改為直接合併重複筆記,pending-review 只留規則候選與問題;專案搬到 ~/orca/projects 延後 2~3 週再決定。
+- `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)、plan/code/aux model routing 與 shell 權限規則。近期:新增 /orca-onboard skill(既有 repo 的本機機密集中到 ~/.config/<repo>/ 單一來源 + 通用 orca-setup.sh,開 workspace 自動 symlink);週三回顧改為直接合併重複筆記。
 - `ai_session_export`:對話存檔匯出工具(fork 自 upstream),含 Kiro adapter 與遮罩,cron 每天增量匯出。
 - `semantic-search-skill`:本機 Ollama 語意搜尋,查對話存檔與 OBSERVATIONS,供 /recall skill 使用。
 - `private_session_data`:對話存檔的 age 加密備份 private repo。
