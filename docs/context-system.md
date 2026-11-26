@@ -158,8 +158,9 @@ python3 ~/proj/my/repoManager/scripts/session_archive.py restore
 | 元件 | 內容 |
 |------|------|
 | `scripts/heartbeat.py observe` | 每天 12:30(接在 `session-export.sh` 最後)。挑出大小有變的存檔(新 session 或續聊),一次最多 40 個,交給 Kiro 寫 🔴🟡🟢,追加到 `OBSERVATIONS.md` 並 commit。失敗不推進狀態,下次重試同一批。 |
-| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md **直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 產出規則候選與問題寫進 `contexts/memory/pending-review.md`,並直接合併重複筆記(細節見下方)。 |
+| `scripts/heartbeat.py reflect` | 每週三 13:00(cron `0 13 * * 3`)。① 依過去 7 天存檔與各 repo AGENTS.md(repo 位於 `~/orca/projects/` 與 `~/proj/my/` 兩處)**直接**更新 `USER.md`「目前的專案」(只改這段,repo 要真的存在)② 刪掉超過 30 天的 🟢(程式判斷,不靠 AI)③ 產出規則候選與問題寫進 `contexts/memory/pending-review.md`,並直接合併重複筆記(細節見下方)。 |
 | Kiro agent `heartbeat` | `~/.kiro/agents/heartbeat.json`(sonnet-5.5),只有 read/grep/glob,**不能寫檔或執行指令**(已實測)。結果印在標記之間,由腳本驗證格式 → 遮罩 → gitleaks → 寫檔 → 只 commit 碰到的檔。 |
+| 程式檔案 | `heartbeat.py`(入口與 observe)、`heartbeat_reflect.py`(reflect)、`heartbeat_common.py`(路徑、狀態、kiro 執行、gitleaks、commit)、`heartbeat_merge.py`(純函式:整理與合併重複筆記)。 |
 | 不回灌 | heartbeat 的 Kiro session 在 `~/.local/share/ai-heartbeat/` 執行,匯出時用 `--kiro-exclude-cwd` 排除,不會變成下一輪的觀察來源。 |
 | 狀態 / log | `~/.local/share/ai-heartbeat/state.json`(各存檔上次觀察時的大小)、`last-obs.log`、`last-reflect.log`、`cron.log`。 |
 

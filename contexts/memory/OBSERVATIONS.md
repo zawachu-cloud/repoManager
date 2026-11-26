@@ -74,7 +74,7 @@ Date: 2026-11-23
 
 Date: 2026-11-24
 
-🟡 Medium: [專案狀態] zawa 改用 orca(SSH 連進 WSL)開發,psapi-dotnet 現在在 ~/orca/projects/psapi-dotnet(原在 ~/proj/api/psapi-dotnet)。orca 的工作目錄是 ~/orca/workspaces/<專案>/<worktree>,與 zawa 原本預期不同;.env 管理方式也不同,教 orca 流程時要特別說明。未解決:Claude Code 未登入(分支名自動產生不能用),手動建的 psapi-dotnet git 目錄結構待確認。
+🟡 Medium: [專案狀態] zawa 改用 orca(SSH 連進 WSL)開發,psapi-dotnet 現在在 ~/orca/projects/psapi-dotnet(原在 ~/proj/api/psapi-dotnet)。orca 的工作目錄是 ~/orca/workspaces/<專案>/<worktree>,與 zawa 原本預期不同;.env 管理方式也不同,教 orca 流程時要特別說明。
 
 Date: 2026-11-25
 
@@ -86,4 +86,6 @@ Date: 2026-11-25
 
 🟡 Medium: [決策] close session 新增第 4 步「清理暫存」(`docs/repo-standard.md` §3):本 session 由 AI 建立、工作已完成的 `tmp/` 檔(plan-*、review-*、arch-*、log-*、下載的參考原文、.bak、下載暫存)直接刪;zawa 放的資料、舊 session 留下或來源不明、工作未完成的檔先問。只刪 `tmp/` 內的檔,逐檔刪,不用 `rm -rf`,空目錄用 `rmdir`,`tmp/` 本身保留。理由:zawa 已授權這類刪除,範圍以外仍依「破壞性動作先確認」。
 
-🟡 Medium: [專案狀態/決策] Kiro 新版 session(從 orca/ACP 開的)存在 `~/.kiro/sessions/<sha256(工作目錄路徑) 前 16 碼>/sess_<UUID>/`,檔案為 `session.json` + `messages.jsonl`,與舊格式 `~/.kiro/sessions/cli/<id>.json` + `.jsonl` 並存。舊的匯出只掃 cli/,因此 `/close-session` 找不到新格式 session,回報 `session metadata not found`;每日 cron 也漏匯新格式(約 40 個 11/19 起的 session)。修正:ai_session_export commit d0387ba 新增 `sources/kiro_workspace.py` 與 `--kiro-workspace-root`(預設 ~/.kiro/sessions),兩種格式都掃、輸出到同一個 kiro/ 資料夾;新格式只匯出 user 與 assistant 文字,子代理不匯出。新格式的 project_directory 是 orca 工作目錄,zawa 同意照實記錄。文件已更新於 docs/context-system.md §2a。
+🟡 Medium: [專案狀態] Kiro 新版 session(從 orca/ACP 開的)存在 `~/.kiro/sessions/<sha256(工作目錄路徑) 前 16 碼>/sess_<UUID>/`,檔案為 `session.json` + `messages.jsonl`,與舊格式 `~/.kiro/sessions/cli/<id>.json` + `.jsonl` 並存。舊的匯出只掃 cli/,因此 `/close-session` 找不到新格式 session,回報 `session metadata not found`;每日 cron 也漏匯新格式(約 40 個 11/19 起的 session)。
+
+🟡 Medium: [決策] 修正:ai_session_export commit d0387ba 新增 `sources/kiro_workspace.py` 與 `--kiro-workspace-root`(預設 ~/.kiro/sessions),兩種格式都掃、輸出到同一個 kiro/ 資料夾;新格式只匯出 user 與 assistant 文字,子代理不匯出。新格式的 project_directory 是 orca 工作目錄,zawa 同意照實記錄。文件已更新於 docs/context-system.md §2a。

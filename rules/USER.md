@@ -13,13 +13,13 @@
 ## 工作環境
 
 - 主力工具:Kiro CLI(角色 agent:`plan` / `code` / `aux` / `orchestrator`,流程用 `/pipeline`)。也有 Claude Code。
-- 機器:Ubuntu;個人專案放 `~/proj/my/`。
+- 機器:Ubuntu;專案放 `~/orca/projects/`(orca 管理);尚未搬過去的仍在 `~/proj/my/`。
 - repo 的開與收走 repoManager 的 `/create-repo`、`/close-session`、`/check-repo`。
 - Jira 連線（共用）：憑證在 `~/.config/jira/.env`（不進版控），用 `set -a; source ~/.config/jira/.env; set +a` 載入；各 repo 不另放 Jira 憑證。
 
 ## 目前的專案
 
-位於 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
+位於 `~/orca/projects/` 或 `~/proj/my/`。每個專案一行用途,細節放該 repo 的 AGENTS.md。只寫用途與方向,不寫憑證與資料內容(姓名、薪資數字等)。
 
 - `hr`:小型公司人事薪資、排班打卡、收支記帳(Supabase + Cloudflare)。近期:LINE Pay 入帳日與手續費記帳、晚退偵測(30 分門檻)。
 - `hr_db`:hr 的資料庫實驗場。查詢、驗證計薪假設、起草 migration 草案;select 預設 prod,其餘寫入預設 dev。
