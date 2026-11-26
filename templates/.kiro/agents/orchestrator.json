@@ -10,7 +10,8 @@
     "subagent/aux",
     "subagent/code",
     "subagent/plan",
-    "write"
+    "write",
+    "subagent/planner"
   ],
   "allowedTools": [
     "read",
@@ -24,12 +25,14 @@
       "availableAgents": [
         "plan",
         "code",
-        "aux"
+        "aux",
+        "planner"
       ],
       "trustedAgents": [
         "plan",
         "code",
-        "aux"
+        "aux",
+        "planner"
       ]
     },
     "write": {
@@ -96,7 +99,8 @@
         "match": [
           "aux",
           "code",
-          "plan"
+          "plan",
+          "planner"
         ],
         "effect": "allow"
       },
