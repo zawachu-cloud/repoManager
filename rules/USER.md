@@ -37,6 +37,7 @@
 
 - commit / push 由 AI 直接做,不用問。
 - 在 branch 上做的工作若簡單且已完成(測試全綠、合進 main/master 無衝突),直接合進預設 branch 並上版,不用問:不 checkout main 也不 force,用 fast-forward 或 merge 後 `git push origin HEAD:<預設 branch>`;有版號的 repo 打 annotated tag `v<版號>` 並 push。合併有衝突、或需要 zawa 決定的變更才停下來問。
+- **tag 一律打在預設 branch(main/master)上的 commit,不打在 feature branch**。要上 dev 驗證時的順序:先合進預設 branch → 在預設 branch 打 tag → 驗 dev。合併卡住(衝突、需 zawa 決定)就停下來問,不改成在 branch 打 tag 繞過。已打在 branch 上的舊 tag 不搬移(刪、重打 tag 屬破壞性動作)。
 - 破壞性動作(`rm -rf`、`reset --hard`、force push、覆蓋既有檔)先確認。
 - 機密只放 `.env`;備份敏感檔用 `age` 加密。
 - 文件分層省 token:AGENTS.md 只放摘要,細節放 `docs/`,同一件事只寫一處。
