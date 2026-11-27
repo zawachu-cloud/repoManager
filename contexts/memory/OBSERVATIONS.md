@@ -120,3 +120,21 @@ Date: 2026-11-26
 Date: 2026-11-26
 
 🔴 High: [方法論/約束] Kiro 的 subagent 名稱 `plan` 與內建名稱衝突,orchestrator 的派工工具清單不會出現它。規劃用的 subagent 改名 `planner`(內容與 plan 相同),orchestrator 與 pipeline、improve-codebase-architecture skill 都改派 planner;plan.json 已刪除,規劃角色只有 planner(互動與派工共用)。
+
+Date: 2026-11-27
+
+🟡 Medium: [經驗] psapi-dotnet v1.4.28 為了先上 dev 驗證,把 tag 打在 feature branch,之後合併 master 時撞到別的 session 已寫進 master 的 v1.4.28 release note,只好補打 v1.4.29。tag 一律在預設 branch 打,已寫進 USER.md。
+🟡 Medium: [偏好] psapi-dotnet 是 zawa 單人專案:feature branch 做完、測試全綠、無衝突就直接合 master,不開 MR。只加 log 或只改文件這類 QA 不用測的變更不單獨打 tag,先寫 release note,下次發版併入;需要上 dev 驗證的才打 tag。已寫進 AGENTS.md。
+🟡 Medium: [偏好] psapi-dotnet 的 QA 由 QA 自己部署、自己驗,AI 只做到 dev 驗證,回報時不再把部署 QA 或 QA 驗證列成待辦。有特例時 zawa 自己處理。
+🟡 Medium: [決策] /pipeline 新增批次模式(`/pipeline 批次做 A、B、C`):開頭把所有待決事項合成一輪問完,之後不再互動;新待決事項就先擱著做下一項;大型高風險項單獨開 session;約 5 個中型任務換 session。起因:hr 一批任務被切成多個 session。
+🟡 Medium: [專案狀態] hr 照 /improve-codebase-architecture 報告上線 v1.27.2 到 v1.27.9:台灣時間換算收進 lib/taipei-time.js、HTML 跳脫與金額格式收進 lib/format.js、LINE Pay 兩筆寫入失敗時補償還原、core.js 與 4 個大檔拆子目錄。候選 7(工資上限規則兩份)先觀望。
+🟡 Medium: [決策] hr 資料存取層重構採方案 A:mock 模式改用記憶體裡的假 Supabase(lib/fake-supabase/),資料函式只留雲端寫法,測試才跑得到雲端那段。真 RLS 測試之後另開題目。共 8 批,v1.27.10 完成試點(stores、punches),第 2 批計畫已寫好待實作。遷移時發現的線上既有落差一律列單,不順手修。
+🟡 Medium: [專案狀態] stocktake v1.3.0 到 v1.3.2:店長逐項設半單位與安全量,店員盤點時看不到安全量。只有店長與老闆有「採購」鍵,按下後依廠商彙整低於安全量的品項,經 Edge Function 與 Brevo 寄給多位收件者。不做 10 天自動換算,防重複寄送暫不做。
+🟢 Low: [決策] Supabase 存取權杖屬於帳號層級,同帳號的 hr 與 stocktake 可共用。zawa 自己把它複製進 stocktake 的 .env,AI 不自行讀別的 repo 的憑證,等 zawa 授權。Brevo 金鑰則每個專案各產一把,只由 zawa 貼進 Supabase Secrets。
+🟡 Medium: [決策] food_delivery 的 Uber 建議價目標是兩平台每單實收相同:Uber 價 = foodpanda 上架價 × 0.794(foodpanda 抽成 35%、Uber 33.5%,不含提袋費)。鍋底另加價,使最低價為 160,全部鍋底平移,保留價差。參數放 Google 試算表,抽成變動時改參數格即可。
+🟡 Medium: [決策] psapi-dotnet v1.4.28:GetHostGameInfo 的快取拆兩段。商戶與遊戲設定的 key 拿掉 access_token 後共用 60 秒,history_sn 每次即時查,每次回傳快取的副本。ResponseCache 由 public 改 private,避免 CDN 存含注單號的回應。history_sn 有值的情況 dev 沒測到。
+🟢 Low: [專案狀態] psapi-dotnet v1.4.29 起,每個 instance 啟動時寫一筆 `[Startup] GameAPI started version=...`,與 /Version 同一個版號來源。驗證 prod log 時先 grep 它。RD01-7181 對 v1.4.23 的 log 驗證通過,已在 Jira 回覆。
+🟡 Medium: [發現] psapi-dotnet 的 UpsDeposit:URL 的 rate 是儲值加成倍率,入帳 = amount × rate;出金門檻倍率是 DB 的 ups_game_setting.threshold_rate,門檻 = 入帳 × threshold_rate。要「入帳 1 萬、門檻 2 萬」得用 rate=1 加上 threshold_rate=2。
+🟡 Medium: [偏好] devDB 要建與 mis 同級的帳號時,AI 先指出它與權限集中化方向相反並提出較小權限方案。zawa 說明這是 dev 庫、不用那麼小心,要求比照 zawa_chiu,AI 照辦並在 history 記軌跡。dev 庫的權限決定可以較寬鬆,prod 不適用。
+🟢 Low: [決策] /orca-onboard 只需在 orca UI 設 setup hook,archive 不用設:orca-setup.sh 只建 symlink,worktree 收掉時 symlink 自然消失。go-accounting-etl 已套用。orca CLI 沒有設 hook 的命令,這步由 zawa 手動做。
+🟢 Low: [發現] hr 寄信流程:前端呼叫 Supabase Edge Function(send-payslip、send-schedule),函式驗身分與 MFA 後從資料庫取收件人,再打 Brevo API。stocktake 的採購信沿用同一套做法。
