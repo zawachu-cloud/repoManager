@@ -25,7 +25,7 @@
 - `hr_db`:hr 的資料庫實驗場。查詢、驗證計薪假設、起草 migration 草案;select 預設 prod,其餘寫入預設 dev。
 - `income_ana`:火鍋店營收與人力成本分析。方向:用 hr ledger 實數重算 10 月損益、補齊完整 11 月營業額。
 - `line`:<待補>
-- `stocktake`:店員用手機盤點庫存並預估可用天數。獨立 Supabase,盤點保留 3 年。近期:半單位盤點、安全量與店長寄出採購建議 email(Edge Function + Brevo)。
+- `stocktake`:店員用手機盤點庫存並預估可用天數。獨立 Supabase,盤點保留 3 年。近期:半單位盤點、安全量與店長寄出採購建議 email(Edge Function + Brevo);架構整理(盤點畫面一次載入最新量、品項儲存規則可測、採購候選前後端共用、寄信主流程可測,v1.3.5)。
 - `innerDoc`:公司人事表單(試用期、離職、資遣、招募)的 Markdown 原始檔與 PDF 轉出,改 md 再轉檔。
 - `modelRouting`:<待補>
 - `repoManager`:repo 標準、開收 repo 的 skill、context 系統(規則與記憶)、planner/code/aux model routing 與 shell 權限規則。近期:新增 /orca-onboard skill(既有 repo 的本機機密集中到 ~/.config/<repo>/ 單一來源 + 通用 orca-setup.sh,開 workspace 自動 symlink);週三回顧改為直接合併重複筆記。
