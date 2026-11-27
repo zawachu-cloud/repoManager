@@ -33,6 +33,7 @@
 - `ai_session_export`:對話存檔匯出工具(fork 自 upstream),含 Kiro adapter 與遮罩,cron 每天增量匯出。
 - `semantic-search-skill`:本機 Ollama 語意搜尋,查對話存檔與 OBSERVATIONS,供 /recall skill 使用。
 - `private_session_data`:對話存檔的 age 加密備份 private repo。
+- `store-menu`:巴豆夭火鍋店 A4 點餐單,改 `menu.yaml` 由 HTML 範本輸出 PDF/PNG。近期:待確認版面、叮嚀字級、logo 描成向量。
 
 ## 工作偏好(已確認)
 
